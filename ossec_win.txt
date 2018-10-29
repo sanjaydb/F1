@@ -1,8 +1,0 @@
-
-Installing ossec on debain with mysql 
--------------------------------------
-{
-    I don't know i am really fan of ossec, and I always wanted to link with mysql database, this is how
-    I did it.
-    
-}
