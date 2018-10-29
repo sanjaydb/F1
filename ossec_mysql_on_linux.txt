@@ -1,0 +1,85 @@
+
+Installing Latest Version OSSEC on Linux
+-----------------------------------------
+{
+	I am really fan of ossec. I always wanted to installed ossec on Linux
+	this how I did it.
+
+	ossec_on_Linux
+	-------------------
+	{
+		#apt-get update -y
+		#apt-get upgrade -y
+		
+		#apt-cache search libmysql*
+		#apt-get install default-libmysql-dev
+
+
+
+		#cd ~/Downloads/ossecossec-hids-3.1.0/src/os_dbd
+
+		#mysql -u root -p
+		{
+			mysql> create database ossec;
+
+			mysql> CREATE USER 'ossecuser'@'localhost' IDENTIFIED BY 'ossecpassword';
+
+			mysql> grant INSERT,SELECT,UPDATE,CREATE, DELETE, EXECUTE on ossec.* to ossecuser@’localhost’;
+		
+			mysql> grant INSERT,SELECT,UPDATE,CREATE, DELETE, EXECUTE on ossec.* to ossecuser@’127.0.0.1’;
+
+			mysql> grant INSERT,SELECT,UPDATE,CREATE, DELETE, EXECUTE on  ossec.* to ossecuser@’192.168.1.1’;
+
+			mysql> flush privileges;
+
+			mysql>quit;
+		}
+
+		#mysql -u ossecuser -p ossec 
+		{
+			check if this is successfully then only go to next step
+		}
+
+		#mysql -u root -p ossec < mysql.schema
+
+		#vi var/ossec/etc/ossec.conf
+		{
+			in <ossec_Config> and </ossec_config> paste this.
+
+			 <database_output>
+        		<hostname>192.168.2.30</hostname>
+        		<username>ossecuser</username>
+        		<password>ossecpass</password>
+        		<database>ossec</database>
+        		<type>mysql</type>
+    		</database_output>	
+		}
+
+		# /var/ossec/bin/ossec-control enable database
+		# /var/ossec/bin/ossec-control restart
+
+		if error check this
+		-------------------
+		{
+			# /var/ossec/bin/ossec-dbd -df
+		}
+		
+
+
+	}
+
+}
+
+
+Temporarily disable sleep
+------------------------------
+{
+	To Activate
+	---------------	
+	systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
+	To Disable it
+	---------------
+	sudo systemctl unmask sleep.target suspend.target hibernate.target hybrid-sleep.target
+
+
+}
