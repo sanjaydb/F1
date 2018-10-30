@@ -1,0 +1,63 @@
+
+Following are the commands to get hardware info of the server
+-------------------------------------------------------------
+
+
+Getting SMBIOS data from sysfs.
+--------------------------------
+{
+    #dmidecode --type 1
+}
+
+
+Baseborad information
+---------------------
+{
+    #dmidecode --type 2
+}
+
+Chassis information
+---------------------
+{
+    #dmidecode --type 3
+}
+
+
+--type 4        --> Processor information
+--type 5        -->
+--type 6        -->
+--type 7        --> Cache Information
+--type 8        --> Port Connector Information
+--type 9        --> System Slots Information
+--type 10       --> On Board Device Information --> Video
+--type 11       --> OEM String --> Dell Systems
+--type 12       --> DMI Information
+--type 13       --> BIOS Lanaguage
+--type 14       --> 
+--type 15       --> 
+--type 16       --> Physical Memory Array
+--type 17       --> Memory Device --> DDR3
+--type 18       --> 
+--type 19       --> Memory Array Mapped Address --> DMItype 19
+--type 20       --> Memory Array Mapped Address --> DMI type 20
+--type 21       --> Pointing Devices
+--type 22       --> Portable Battery
+--type 27       --> Cooling Device
+--type 28       --> Temperature Probe
+--type 32       --> DMI type 32 --> error detection
+--type 41       --> DMI 41 --> Onboard IGD --> Onboard LAN
+
+
+Dump 
+----
+{
+    #dmidecode -u
+}
+
+
+
+
+
+
+
+
