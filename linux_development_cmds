@@ -1,0 +1,25 @@
+
+Command used while development of an application
+
+
+Find String in all files and sub folders
+----------------------------------------
+{
+      #grep -rnw '/etc/' -e 'password'
+}
+
+Find and Replace String in all files and sub folders
+----------------------------------------------------
+{
+    sed -i 's/192.168.1.1/10.10.10.1/g 
+}
+
+Finding Files in sub directory and directories 
+----------------------------------------------
+{
+    find file san.txt from root dierectory
+    --------------------------------------
+    {
+        #find / -name "san.c" -print 
+     }
+}
