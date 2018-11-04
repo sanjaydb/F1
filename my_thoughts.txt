@@ -1,0 +1,12 @@
+Today 04th November 2018 
+------------------------
+{
+  Today is Diwali and i am very happy, I am sitting with my son SUJAY-SANJAY-DEVIDAS-DEVCHAND-CHANGO-DAGDU-BHIKA-GANPAT-BHALERAO :)
+  The reason I am very very happy is ,my son started  maintaining his  github, and started writing blogs too.
+  This is very important, as our fore coming  generation will have access to this, they we come to know, how we used to code. 
+  Sujay my son , has actually completed this C course last year at this writing his age is 12 years as of today.  
+  And today he started to share it to the world. Good luck Chiku (pet name) 
+
+  Tomorrow there is Demo with my client, for SOC application which I ave written in C, lets see how he takes it. 
+
+}
