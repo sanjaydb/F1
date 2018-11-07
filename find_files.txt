@@ -1,0 +1,5 @@
+search file with file
+---------------------
+{
+  find . -type f -exec file '{}' \;
+}
