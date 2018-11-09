@@ -1,0 +1,17 @@
+
+Clear RAM Memory Cache, Buffer and Swap Space 
+---------------------------------------------
+{
+  # sync; echo 1 > /proc/sys/vm/drop_caches     --> use this 
+  # sync; echo 2 > /proc/sys/vm/drop_caches
+  # sync; echo 3 > /proc/sys/vm/drop_caches     --> not to used in production
+}
+
+To check memory
+---------------
+{
+  #free -g
+  #free -h
+}
+  
+
