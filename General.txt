@@ -17,7 +17,29 @@ L4
   wiki
   ----
   {
-    L4 is a family of second-generation microkernels, generally used to implement Unix-like operating systems, but also used in a variety     of other systems.
+    
+      L4 is a family of second-generation microkernels, generally used to implement Unix-like operating systems, but also used in a 
+      variety of other systems.
+
+      microkernel ,micorkernal Kernel provides mechanisms, not services 
+
+      Linux x86:	4.1 Million lines
+      Mach4 x86:	90,000 lines
+      OKL4 x86:	15,000 lines 
+
+    NICTA seL4 microkernel
+      • API suitable for highly secure systems (military, banking etc)‏
+      • Complete control over communication and system resources
+      • C-only implementation, performance at par with OKL4
+      • Novel kernel resource management 
+
+    OKL4 Kernel debugger
+
+      • OKL4 kernel
+      • Root server
+      • Device drivers
+      • Other servers
+    • Applications
 
   }
 
