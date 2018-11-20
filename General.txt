@@ -1,0 +1,8 @@
+I fill eCos  is really good.
+bootloader used is redboot
+
+tools used
+-----------
+%mincom
+%nc -lup <port>
+
