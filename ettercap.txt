@@ -1,0 +1,13 @@
+sniffing
+--------
+{
+  ettercap -T -Q -i eth2 -P dns_spoof -M arp // //
+
+    -T: Specifies the use of the text-based interface
+    -q: Runs commands in quiet mode
+    -P dns_spoof: Specifies the use of the dns_spoof plug-in
+    -M arp: Initiates a MITM ARP poisoning attack to intercept packets between hosts
+    // //: Specifies the entire network as the targets
+
+
+}
