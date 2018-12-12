@@ -1,0 +1,6 @@
+To change and replace 
+---------------------
+{
+  `:s/patern/replcae      --> single instatnce
+  `%s/pattern/replcae     --> whole document find and replace
+}
