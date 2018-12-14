@@ -1,5 +1,18 @@
 starting services at boot time in Debian 
 ----------------------------------------
 {
-  update-rc.d ssh defaults
+  update-rc.d ssh defaults     ||      systemctl start ssh.service
+}
+
+
+starting Services in session
+----------------------------
+{
+  /etc /init.d/mysqld start    ||    service mysqld start
+}
+
+check service active in runtime
+-------------------------------
+{
+      ls -l /etc/rc?.d/*ssh
 }
