@@ -1,0 +1,5 @@
+starting services at boot time in Debian 
+----------------------------------------
+{
+  update-rc.d ssh defaults
+}
