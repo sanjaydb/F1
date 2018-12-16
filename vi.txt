@@ -4,3 +4,76 @@ To change and replace
   `:s/patern/replcae      --> single instatnce
   `%s/pattern/replcae     --> whole document find and replace
 }
+
+ 	  :sp p1.c 				--> open a file  Horizontally split window
+    :vsp p1.c 				--> open a file Vertically split window
+    `+ctrl+w+leftarrow 		--> to move cursor in windows 
+    ctrl + ww  				--> to switch windows
+    ctrl + wv 				--> split window vertically
+
+    :help g
+    :saveas newfile.c
+    :close 
+    :wqa 					--> write (save) and quit on all tabs
+    
+    movement
+    --------
+    H 		--> move top of screen
+    b 		--> move backwork word
+    w 		--> move fwd word
+    0 		--> start of the line
+    $ 		--> end of line
+    G 		--> move last line
+    3G 		--> move line number
+
+    screen
+    ------
+    ctrl + e 		--> move screen 1 down
+    crtl + y 		--> move screen 1 up
+
+    ctrl + b 		--> move back full screen
+    ctrl + f 		--> mov frwd full screen
+
+
+    split
+    -----
+    :sp new.c    	--> move ctrl + w + up/dwn/lef/rig arrow
+    :vsp new.c 		--> vertical split
+    :ls 			--> list open files
+
+    Ctrl + wv 		--> split window vertically
+
+    tab
+    ----
+    Ctrl + wT 		--> move the current split window into its own tab
+    :tabnew or :tabnew new.c 		--> open a file in a new tab
+
+    gt 				--> move tab to next tab
+    tabn 			--> "
+
+    gT 				--> move tab previous
+    tabp			--> "
+
+    3gt 			--> move to tab number
+
+    :tabonly or :tabo 		--> close all tabs except for the current one
+    :tabdo q 		--> closes all opened tabs
+
+
+
+    Marks
+    -----
+
+    :marks 		--> list of marks
+    ma 			--> set current position for mark A
+    `a 			--> jump to position of mark A
+    y`a 		--> yank text to position of mark A
+
+
+    search
+    -------
+    /pattern 		--> search for pattern
+	?pattern 		--> search backward for pattern
+	n 				--> repeat search in same direction
+	N 				--> repeat search in opposite direction
+	:%s/old/new/g 	--> replace all old with new throughout file
