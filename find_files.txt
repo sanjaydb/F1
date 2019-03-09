@@ -1,6 +1,11 @@
 search file with file
 ---------------------
 {
-  find . -type f -exec file '{}' \;
-  grep -rnw '/opt/' -e 'EDXAPP_MYSQL_PASSWORD'
+  # find . -type f -exec file '{}' \;
+  # find . -name '*.js' -exec grep -i 'pass' {} \; -print
+  # find / -type f -exec grep -l "pass" {} \; 
+  # grep -rnw '/opt/' -e 'EDXAPP_MYSQL_PASSWORD'
+  # grep -Ril "text-to-find-here" /
+  # ack 'text-to-find-here'
+  
 }
