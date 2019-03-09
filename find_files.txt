@@ -2,4 +2,5 @@ search file with file
 ---------------------
 {
   find . -type f -exec file '{}' \;
+  grep -rnw '/opt/' -e 'EDXAPP_MYSQL_PASSWORD'
 }
