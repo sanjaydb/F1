@@ -9,3 +9,9 @@ search file with file
   # ack 'text-to-find-here'
   
 }
+
+find largest file
+-----------------
+{
+  find / -type f -printf "%s\t%p\n" | sort -n | tail -1
+}
