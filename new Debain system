@@ -375,11 +375,14 @@ After Installing My Deabin System Step Done
 				 #tripwire --check --email-report
 				
           
-           	}
-          
-		}
-
-
-
+          	 	}
+          	
+			Install Clam Antivirus
+			----------------------
+			{
+				#apt-get install clamav
+				#freshclam
+			}
+		
 	}
 }
