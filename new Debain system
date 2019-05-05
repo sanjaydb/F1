@@ -340,7 +340,20 @@ After Installing My Deabin System Step Done
 				   /proc/cmdline                            -> $(Device)   ;
 				   /proc/misc                               -> $(Device)   ;
 
-	  }
+	  			}
+				
+				
+				#twadmin -m P /etc/tripwire/twpol.txt
+				#tripwire --init
+				#tripwire --check
+				#cd ~/touch checkfile.txt
+				#tripwire --check
+				#tripwire --check --email-report
+				#crontab -e -u root
+				{
+					0 0 * * * tripwire --check --email-report
+				}
+				#systemctl restart crond
           
            	}
           
