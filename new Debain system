@@ -382,6 +382,7 @@ After Installing My Deabin System Step Done
 			{
 				#apt-get install clamav
 				#freshclam
+				#clamscan
 			}
 		
 	}
