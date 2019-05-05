@@ -55,7 +55,296 @@ After Installing My Deabin System Step Done
 		twprint --print-report --twrfile /var/lib/tripwire/report/tecmint-20170727-235255.twr > report.txt
 		vi report.txt
 
+		{
 
+			#
+			# Standard Debian Tripwire configuration
+			#
+			#
+			# This configuration covers the contents of all 'Essential: yes'
+			# packages along with any packages necessary for access to an internet
+			# or system availability, e.g. name services, mail services, PCMCIA
+			# support, RAID support, and backup/restore support.
+			#
+
+			#
+			# Global Variable Definitions
+			#
+			# These definitions override those in to configuration file.  Do not         
+			# change them unless you understand what you're doing.
+			#
+
+			@@section GLOBAL
+			TWROOT=/usr;
+			TWBIN = /usr/sbin;
+			TWETC = /etc/tripwire;
+			TWVAR = /var/lib/tripwire;
+			TWDB = /var/lib/tripware;
+			TWPOL = /etc/tripwire;
+			TWLKEY= /etc/tripwire;
+			TWSKEY= /etc/tripwire;
+			TWREPORT=/root/Documents/tripwire;
+
+
+				   @@section FS
+				   SEC_CRIT       = $(IgnoreNone)-SHa;  # Critical files - we can't afford to miss any changes.
+				   SEC_SUID       = $(IgnoreNone)-SHa;  # Binaries with the SUID or SGID flags set.
+				   SEC_TCB        = $(ReadOnly);  # Members of the Trusted Computing Base.
+				   SEC_BIN        = $(ReadOnly);  # Binaries that shouldn't change
+				   SEC_CONFIG = $(Dynamic); # Config files that are changed infrequently but accessed often.
+				   SEC_LOG        = $(Growing); # Files that grow, but that should never change ownership.
+				   SEC_INVARIANT = +pug;  # Directories that should never change permission or ownership.
+				   SIG_LOW        = 33; # Non-critical files that are of minimal security impact
+				   SIG_MED        = 66; # Non-critical files that are of significant security impact
+				   SIG_HI         = 100;  # Critical files that are significant points of vulnerability
+
+
+				   # Tripwire Binaries
+				   (emailto = root@dd.com, rulename = "Tripwire Binaries", severity = $(SIG_HI))
+				   {
+				   $(TWBIN)/siggen    -> $(ReadOnly);
+				   $(TWBIN)/tripwire  -> $(ReadOnly);
+				   $(TWBIN)/twadmin   -> $(ReadOnly);
+				   $(TWBIN)/twprint   -> $(ReadOnly);
+				   }
+
+				   # Tripwire Data Files - Configuration Files, Policy Files, Keys, Reports, Databases
+				   (emailto = root@dd.com, rulename = "Tripwire Data Files", severity = $(SIG_HI))
+				   {
+				   # NOTE: Removing the inode attribute because when Tripwire creates a backup
+				   # it does so by renaming the old file and creating a new one (which will
+				   # have a new inode number).  Leaving inode turned on for keys, which shouldn't
+				   # ever change.
+
+				   # NOTE: this rule will trigger on the first integrity check after database
+				   # initialization, and each integrity check afterward until a database update 
+				   # is run, since the database file will not exist before that point.
+				   $(TWDB)                              -> $(Dynamic) -i;
+				   $(TWPOL)/tw.pol                      -> $(SEC_BIN) -i;
+				   $(TWBIN)/tw.cfg                      -> $(SEC_BIN) -i;
+				   $(TWLKEY)/$(HOSTNAME)-local.key   -> $(SEC_BIN) ;
+				   $(TWSKEY)/site.key                   -> $(SEC_BIN) ;
+
+				   #don't scan the individual reports
+				   $(TWREPORT)    -> $(Dynamic) (recurse=0);  
+				   }
+
+				   # These files are critical to a correct system boot.
+				   (emailto = root@dd.com, rulename = "Critical system boot files", severity = 100)
+				   {
+				   /boot                                    -> $(SEC_CRIT)  ;
+				   !/boot/System.map      ;
+				   !/boot/module-info     ;
+				   }
+
+				   # These files change the behavior of the root account
+				   (emailto = root@dd.com, rulename = "Root config files", severity = 100)
+				   {
+				   /root                                    -> $(SEC_CRIT)   ;
+				   /root/.bash_history    -> $(SEC_LOG)    ;
+				   }
+
+				   # Commonly accessed directories that should remain static with regards to owner and group
+				   (emailto = root@dd.com, rulename = "Invariant Directories", severity = $(SIG_MED))
+				   {
+				   /                  -> $(SEC_INVARIANT) (recurse = 0);
+				   /home              -> $(SEC_INVARIANT) (recurse = 0); 
+				   /etc               -> $(SEC_INVARIANT) (recurse = 0);
+				   /chroot            -> $(SEC_INVARIANT) (recurse = 0);
+				   /cache           -> $(SEC_INVARIANT) (recurse = 0);
+				   }
+
+				   (emailto = root@dd.com, rulename = "Shell Binaries")
+				   {
+				   /bin/bsh               -> $(SEC_BIN);
+				   /bin/csh               -> $(SEC_BIN);
+				   /bin/sh                -> $(SEC_BIN);
+				   }
+
+				   # Rest of critical system binaries
+				   (emailto = root@dd.com, rulename = "OS executables and libraries", severity = $(SIG_HI))
+				   {
+				   /bin                                     -> $(ReadOnly)   ;
+				   /lib                                     -> $(ReadOnly)   ;
+				   }
+
+				   # Local files
+				   (emailto = root@dd.com, rulename = "User binaries", severity = $(SIG_MED))
+				   {
+				   /sbin                          -> $(SEC_BIN) (recurse = 1);
+				   /usr/sbin                      -> $(SEC_BIN) (recurse = 1);
+				   /usr/bin                       -> $(SEC_BIN) (recurse = 1);
+				   }
+
+				   # Temporary directories
+				   (emailto = root@dd.com, rulename = "Temporary directories", recurse = false, severity = $(SIG_LOW))
+				   {
+				   /usr/tmp                       -> $(SEC_INVARIANT);
+				   /var/tmp                       -> $(SEC_INVARIANT);
+				   /tmp                           -> $(SEC_INVARIANT);
+				   }
+
+				   # Libraries
+				   (emailto = root@dd.com, rulename = "Libraries", severity = $(SIG_MED))
+				   {
+				   /usr/lib             -> $(SEC_BIN);
+				   }
+
+				   # Include
+				   (emailto = root@dd.com, rulename = "OS Development Files", severity = $(SIG_MED))
+				   {
+				   /usr/include           -> $(SEC_BIN);
+				   }
+
+				   # Shared
+				   (emailto = root@dd.com, rulename = "OS Shared Files", severity = $(SIG_MED))
+				   {
+				   /usr/share           -> $(SEC_BIN);
+				   }
+
+				   # Kernel headers files
+				   (emailto = root@dd.com, rulename = "Kernel Headers Files", severity = $( SIG_HI))
+				   {
+				   /usr/src/linux-2.2.14        -> $(SEC_BIN);
+				   }
+
+				   # setuid/setgid root programs
+				   (emailto = root@dd.com, rulename = "setuid/setgid", severity = $(SIG_HI))
+				   {
+				   /bin/su            -> $(SEC_SUID);
+				   /sbin/pwdb_chkpwd      -> $(SEC_SUID);
+				   /sbin/dump           -> $(SEC_SUID);
+				   /sbin/restore          -> $(SEC_SUID);
+				   /usr/bin/at          -> $(SEC_SUID);
+				   /usr/bin/passwd        -> $(SEC_SUID);
+				   /usr/bin/suidperl        -> $(SEC_SUID);
+				   /usr/bin/crontab         -> $(SEC_SUID);
+				   /usr/sbin/sendmail         -> $(SEC_SUID);
+				   /usr/bin/man           -> $(SEC_SUID);
+				   /usr/bin/sperl5.00503      -> $(SEC_SUID);
+				   /usr/bin/slocate         -> $(SEC_SUID);
+				   /usr/sbin/utempter         -> $(SEC_SUID);
+				   /sbin/netreport        -> $(SEC_SUID);
+				   }
+
+				   (emailto = root@dd.com, rulename = "Configuration Files")
+				   {
+				   /etc/hosts                     -> $(SEC_CONFIG);
+				   /etc/inetd.conf                -> $(SEC_CONFIG);
+				   /etc/initlog.conf    -> $(SEC_CONFIG);
+				   /etc/inittab                   -> $(SEC_CONFIG);
+				   /etc/resolv.conf               -> $(SEC_CONFIG);
+				   /etc/syslog.conf               -> $(SEC_CONFIG);
+				   }
+
+				   (emailto = root@dd.com, rulename = "Security Control")
+				   {
+				   /etc/group                   -> $(SEC_CRIT);
+				   /etc/security/               -> $(SEC_CRIT);
+				   /lib/security/               -> $(SEC_CRIT);
+				   /var/spool/cron              -> $(SEC_CRIT);
+				   }
+
+				   (emailto = root@dd.com, rulename = "Login Scripts")
+				   {
+				   /etc/csh.login                             -> $(SEC_CONFIG);
+				   /etc/profile                               -> $(SEC_CONFIG);
+				   }
+
+				   # These files change every time the system boots
+				   (emailto = root@dd.com, rulename = "System boot changes", severity = $(SIG_HI))
+				   {
+				   /dev/log                                 -> $(Dynamic)   ;
+				   /dev/cua0                                -> $(Dynamic)   ;
+				   /dev/console                             -> $(Dynamic)   ;
+				   /dev/tty2                                -> $(Dynamic)   ; # tty devices
+				   /dev/tty3                                -> $(Dynamic)   ; # are extremely
+				   /dev/tty4                                -> $(Dynamic)   ; # variable
+				   /dev/tty5                                -> $(Dynamic)   ;
+				   /dev/tty6                                -> $(Dynamic)   ;
+				   /dev/urandom                             -> $(Dynamic)   ;
+				   /dev/initctl                             -> $(Dynamic)   ;
+				   /var/lock/subsys                         -> $(Dynamic)   ;
+				   /var/run                                 -> $(Dynamic)   ; # daemon PIDs
+				   /var/log                                 -> $(Dynamic)   ;
+				   /etc/ioctl.save                          -> $(Dynamic)   ;
+				   /etc/.pwd.lock                           -> $(Dynamic)   ;
+				   /etc/mtab                                -> $(Dynamic)   ;
+				   /lib/modules                             -> $(Dynamic)   ;
+				   }
+
+				   # Critical configuration files
+				   (emailto = root@dd.com, rulename = "Critical configuration files", severity = $(SIG_HI))
+				   {
+				   /etc/conf.modules                        -> $(ReadOnly)   ;
+				   /etc/crontab                             -> $(ReadOnly)   ;
+				   /etc/cron.hourly                         -> $(ReadOnly)   ;
+				   /etc/cron.daily                          -> $(ReadOnly)   ;
+				   /etc/cron.weekly                         -> $(ReadOnly)   ;
+				   /etc/cron.monthly                        -> $(ReadOnly)   ;
+				   /etc/default                             -> $(ReadOnly)   ;
+				   /etc/fstab                               -> $(ReadOnly)   ;
+				   /etc/group-            -> $(ReadOnly)    ;  # changes should be infrequent
+				   /etc/host.conf                           -> $(ReadOnly)   ;
+				   /etc/hosts.allow                         -> $(ReadOnly)   ;
+				   /etc/hosts.deny                          -> $(ReadOnly)   ;
+				   /etc/lilo.conf   -> $(ReadOnly)   ;
+				   /etc/logrotate.conf    -> $(ReadOnly)   ;
+				   /etc/pwdb.conf   -> $(ReadOnly)   ;
+				   /etc/securetty   -> $(ReadOnly)   ;
+				   /etc/sendmail.cf   -> $(ReadOnly)   ;
+				   /etc/protocols                           -> $(ReadOnly)   ;
+				   /etc/services                            -> $(ReadOnly)   ;
+				   /etc/rc.d/init.d                         -> $(ReadOnly)   ;
+				   /etc/rc.d                                -> $(ReadOnly)   ;
+				   /etc/motd                                -> $(ReadOnly)   ;
+				   /etc/passwd                              -> $(ReadOnly)   ;
+				   /etc/passwd-                             -> $(ReadOnly)   ;
+				   /etc/profile.d                           -> $(ReadOnly)   ;
+				   /etc/rpc                                 -> $(ReadOnly)   ;
+				   /etc/sysconfig                           -> $(ReadOnly)   ;
+				   /etc/shells    -> $(ReadOnly)   ;
+				   /etc/nsswitch.conf                       -> $(ReadOnly)   ;
+				   }
+
+				   # Critical devices
+				   (emailto = root@dd.com, rulename = "Critical devices", severity = $(SIG_HI), recurse = false)
+				   {
+				   /dev/kmem                                -> $(Device)   ;
+				   /dev/mem                                 -> $(Device)   ;
+				   /dev/null                                -> $(Device)   ;
+				   /dev/zero                                -> $(Device)   ;
+				   /proc/devices                            -> $(Device)   ;
+				   /proc/net                                -> $(Device)   ;
+				   /proc/tty    -> $(Device)   ;
+				   /proc/sys                                -> $(Device)   ;
+				   /proc/cpuinfo                            -> $(Device)   ;
+				   /proc/modules                            -> $(Device)   ;
+				   /proc/mounts                             -> $(Device)   ;
+				   /proc/dma                                -> $(Device)   ;
+				   /proc/filesystems                        -> $(Device)   ;
+				   /proc/ide    -> $(Device)   ;
+				   /proc/interrupts                         -> $(Device)   ;
+				   /proc/ioports                            -> $(Device)   ;
+				   /proc/scsi                               -> $(Device)   ;
+				   /proc/kcore                              -> $(Device)   ;
+				   /proc/self                               -> $(Device)   ;
+				   /proc/kmsg                               -> $(Device)   ;
+				   /proc/stat                               -> $(Device)   ;
+				   /proc/ksyms                              -> $(Device)   ;
+				   /proc/loadavg                            -> $(Device)   ;
+				   /proc/uptime                             -> $(Device)   ;
+				   /proc/locks                              -> $(Device)   ;
+				   /proc/version                            -> $(Device)   ;
+				   /proc/meminfo                            -> $(Device)   ;
+				   /proc/cmdline                            -> $(Device)   ;
+				   /proc/misc                               -> $(Device)   ;
+
+	  }
+          
+           	}
+          
+		}
 
 
 
