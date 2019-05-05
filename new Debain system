@@ -383,6 +383,11 @@ After Installing My Deabin System Step Done
 				#apt-get install clamav
 				#freshclam
 				#clamscan
+				#vi /etc/cron.daily/daily_scan
+				{
+					/usr/bin/clamscan -i -r /home >> /var/log/ClamAV/daily_scan.log
+				}
+				
 			}
 		
 	}
