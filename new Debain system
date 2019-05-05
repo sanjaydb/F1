@@ -354,6 +354,26 @@ After Installing My Deabin System Step Done
 					0 0 * * * tripwire --check --email-report
 				}
 				#systemctl restart crond
+				
+				// New Entery
+				# vi /etc/tripwire/twpol.txt
+				
+				ADD
+				# Ruleset for website
+ 				(
+   					rulename = "www",
+   					severity= $(SIG_HI),
+   					emailto = san@trizeus.com
+ 				)
+ 				{
+         				/var/www        -> $(SEC_CRIT);
+ 				}
+				
+				
+				 #twadmin -m P /etc/tripwire/twpol.txt
+				 #tripwire --init
+				 #tripwire --check --email-report
+				
           
            	}
           
