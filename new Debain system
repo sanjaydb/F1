@@ -1,0 +1,73 @@
+After Installing My Deabin System Step Done 
+--------------------------------------------
+{
+	apt-get update
+	apt-get upgrade
+	apt-get update --fix-missing
+	apt-get upgrade --fix-missing
+	apt autoremove
+	apt-get dist-upgrade --fix-missing 
+
+
+
+	Installing sublime
+	------------------
+	{
+		apt install apt-transport-https
+		wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add -
+		echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list
+		apt-get update
+		apt-get install sublime-text
+
+		vi /etc/hosts
+		{
+			#Sublime Text 3
+		0.0.0.0 license.sublimehq.com
+		0.0.0.0 45.55.255.55
+		0.0.0.0 45.55.41.223
+		}
+
+		{
+		ZYNGA INC.
+		50 User License
+		EA7E-811825
+		927BA117 84C9300F 4A0CCBC4 34A56B44
+		985E4562 59F2B63B CCCFF92F 0E646B83
+		0FD6487D 1507AE29 9CC4F9F5 0A6F32E3
+		0343D868 C18E2CD5 27641A71 25475648
+		309705B3 E468DDC4 1B766A18 7952D28C
+		E627DDBA 960A2153 69A2D98A C87C0607
+		45DC6049 8C04EC29 D18DFA40 442C680B
+		1342224D 44D90641 33A3B9F2 46AADB8F
+		}
+
+	}	
+
+	Installing Tripwire IDS
+	-----------------------
+	{
+		apt update
+		apt install tripwire
+		site-key : ******
+		local-key : ******
+		f1
+		--
+		{
+			Blow files should be on other system and should be Stronglt Read Only
+			Read more : /usr/share/doc/tripwire/README.Debain
+			tripwire bin are located in : /usr/bin
+				     database in : /var/lib/tripware
+		}
+
+		tripwire --init
+		tripwire --check	// generate system report
+		ls -la  /var/lib/tripwire/report/
+		twprint --print-report --twrfile /var/lib/tripwire/report/tecmint-20170727-235255.twr > report.txt
+		vi report.txt
+
+
+
+
+
+	}
+}
