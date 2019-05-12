@@ -78,6 +78,18 @@ Prefork Module
      test
      ----
      {
-        http://devd.com/cgi-bin/b
+        a.c
+        ---
+        {
+          #include <stdio.h>
+          int main(void) {
+          printf("Content-Type: text/plain;charset=us-ascii\n\n");
+          printf("Hello world\n\n");
+          return 0;
+        }
+        
+      }
+        
+        curl http://devd.com/cgi-bin/b
      }
 }
