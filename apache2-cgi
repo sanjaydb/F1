@@ -75,4 +75,9 @@ Prefork Module
          sudo ln -s ../mods-available/cgi.load
      }
      
+     test
+     ----
+     {
+        http://devd.com/cgi-bin/b
+     }
 }
