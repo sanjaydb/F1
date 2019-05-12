@@ -1,0 +1,30 @@
+Prefork ModulePermalink
+-----------------------
+{
+  vi /etc/apache2/mods-available/mpm_prefork.conf
+  {
+      <IfModule mpm_prefork_module>
+        StartServers              4
+        MinSpareServers           20
+        MaxSpareServers           40
+        MaxRequestWorkers         200
+        MaxConnectionsPerChild    4500
+      </IfModule>
+    }
+    
+    disable event module & enable prefork module
+    ---------------------------------------------
+    {
+      sudo a2dismod mpm_event
+      sudo a2enmod mpm_prefork
+    }
+
+    restart apache2
+    {
+      sudo systemctl restart apache2   or
+      service apache2 reload
+     }
+
+
+
+}
