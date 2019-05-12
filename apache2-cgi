@@ -20,6 +20,7 @@ Prefork Module
     }
 
     restart apache2
+    ---------------
     {
       sudo systemctl restart apache2   or
       service apache2 reload
@@ -47,11 +48,31 @@ Prefork Module
                 SetHandler cgi-script
             </Directory>
           </VirtualHost>
+         }
+       }  
+      
+      create dir
+      ----------
+      {
+        sudo mkdir -p /var/www/dev.com/public_html
+        sudo mkdir -p /var/www/dev.com/public_html/cgi-bin
+        sudo mkdir /var/www/devd.com/logs
       }
-      
-      
     
-    }
-    
-
+     enable site
+     -----------
+     {
+      sudo a2ensite devd.com.conf          
+      sudo systemctl restart apache2   or
+      service apache2 reload
+     }
+     
+     enable cgi module
+     -----------------
+     {
+       // default loaction is /usr/lib/cgi-bin/
+         cd /etc/apache2/mods-enabled
+         sudo ln -s ../mods-available/cgi.load
+     }
+     
 }
