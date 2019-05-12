@@ -1,5 +1,5 @@
-Prefork ModulePermalink
------------------------
+Prefork Module
+--------------
 {
   vi /etc/apache2/mods-available/mpm_prefork.conf
   {
@@ -25,6 +25,33 @@ Prefork ModulePermalink
       service apache2 reload
      }
 
-
+    Configure Apache for Virtual Hosting
+    ------------------------------------
+    {
+      disable default
+      sudo a2dissite 000-default.conf  
+      
+      creating first virtual -> devd.com
+      vi /etc/apache2/sites-available/devd.com.conf
+      {
+        <VirtualHost *:80>
+            ServerAdmin webmaster@devd.com
+            ServerName devd.com
+            ServerAlias www.devd.com
+            DocumentRoot /var/www/devd.com/public_html/
+            ErrorLog /var/www/devd.com/logs/error.log
+            CustomLog /var/www/devd.com/logs/access.log combined
+            ScriptAlias /cgi-bin/ /var/www/devd.com/public_html/cgi-bin/
+            <Directory "/home/*/public_html/cgi-bin">
+                Options +ExecCGI
+                SetHandler cgi-script
+            </Directory>
+          </VirtualHost>
+      }
+      
+      
+    
+    }
+    
 
 }
