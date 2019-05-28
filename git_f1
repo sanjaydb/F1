@@ -7,3 +7,12 @@
  git log --summary
  git status
  
+delet file
+----------
+{
+ git rm -r -f b1
+ git reset HEAD b1
+ git checkout -- b1
+ git commit -a
+ git status
+}
