@@ -1,0 +1,73 @@
+configure Network
+-----------------
+{
+  check network ip
+  {
+    # ip addr
+    # ifconfig
+   }
+   
+   files used for networking
+   -------------------------
+   {
+    /etc/network/interfaces     describes the network interfaces
+    /etc/hostname               configures the nameserver credentials
+    /etc/hosts                  resolves IP addresses to hostnames
+    /etc/resolv.conf 
+   }
+   
+   configure ip
+   ------------
+   {
+      /etc/network/interfaces 
+      {
+        # The loopback network interface
+        auto lo
+        iface lo inet loopback
+        
+        # The primary network interface
+        auto eth0
+        iface eth0 inet static
+          address 10.0.0.41
+          netmask 255.255.255.0
+          network 10.0.0.0
+          broadcast 10.0.0.255
+          gateway 10.0.0.1
+          #dns-nameservers 10.0.0.1 8.8.8.8
+          #dns-domain san.com
+          #dns-search san.com
+      }
+    
+      #ifdown eth0; ifup eth0
+   
+      change hostname
+      ---------------
+      {
+        /etc/hostname
+        {
+            bhal
+        }
+      
+       FQDN
+       ----
+       {
+          /etc/hosts
+          {
+            192.168.0.0 bha.san.com
+          }
+       
+       }
+      
+      changing Network config
+      -----------------------
+      {
+          /etc/resolv.conf
+          {
+                search acme.com
+                nameserver 10.0.0.1
+                nameserver 8.8.8.8
+           }
+      }
+   }
+
+}
