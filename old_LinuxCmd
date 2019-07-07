@@ -1,0 +1,335 @@
+Basic Linux Command
+
+http://basiclinuxcommand.blogspot.com/
+
+MontaVista Linux 6
+
+
+
+
+Check SELinux status on Linux Fedora system.
+[root@fedora10 ~]# cat /etc/sysconfig/selinux
+[root@fedora10 ~]# sestatus
+
+Add users
+Command use to add new user:
+# useradd [username] <-- Add user account to Linux system
+# passwd [username] <-- Create password for user
+# finger [username]  <-- User datails, to verify user created on the system
+# adduser [username]  <-- Note: The adduser is useradd command... you can use either one to add user account on the system...
+
+Display Memory status
+# free
+# free -t
+# free -m
+
+#dmidecode --type 5,6,16,17
+    5     Memory Controller
+    6     Memory Module
+    16   Physical Memory Array
+    17   Memory Device
+#dmidecode --type processor
+
+Cache
+#dmidecode --type 7
+
+Chasis
+[root@fedora ~]# dmidecode --type chasis -- will genrate error
+
+Checking installed rpm on
+#rpm -qa "openvpn"
+
+#The .bash_history contains all Linux command history that you already use or execute on your Linux shell.  Below is the .bash_history
+
+#Below is the inittab configuration file for Linux Fedora 9.  On Linux Fedora 9 system, the inittab is use by upstart for default runlevel only
+
+
+View Partition Label and Partition Type
+[root@fedora ~]# /sbin/blkid
+
+#The anaconda-ks.cfg configuration file automatically generate by anaconda, base on your Fedora installation setup and configuration.
+root@fedora ~]# cat /root/anaconda-ks.cfg
+
+[root@fedora ~]# whereis sha1sum
+[root@fedora ~]# sha1sum dban-1.0.7_i386.iso
+
+#View file inode directory inode information using stat command
+[root@fedora ~]# stat /etc/passwd
+[root@fedora ~]# stat /root
+The inode information contains:
+Inode number
+Mode information to discern file type and also for the stat C function
+Number of links to the file
+UID of the owner
+Group ID (GID) of the owner
+Size of the file
+Actual number of blocks that the file uses
+Time last modified
+Time last accessed
+Time last changed
+
+[root@fedora ~]# w
+20:09:10 up 3:05, 5 users, load average: 0.01, 0.02, 0.00
+USER TTY   FROM        LOGIN@ IDLE  JCPU  PCPU  WHAT
+root tty7  :0          17:07 11.00s 2:28  2:28  /usr/bin/Xorg :
+root pts/1 192.168.1.3 18:26 0.00s  0.26s 0.03s w
+root pts/2 :0.0        18:34 36:06  0.16s 0.16s bash
+root pts/3 :0.0        18:35 35:55  0.12s 0.12s bash
+root pts/4 :0.0        20:07 42.00s 0.15s 0.15s bash
+[root@fedora ~]#
+ 
+
+#Look who log in on your Linux system and what they do
+The w command output above give:
+1.  System uptime:   20:09:10 up 3:05, 5 users, load average: 0.01, 0.02, 0.00
+2.  The user name that log in:   USER
+3.  on TTY:  TTY
+3.  Location from:  FROM
+4. Time login:  LOGIN@
+5. Resources JCPU :  JCPU
+6. Resources PCPU:  PCPU
+7.  and What are they do on the system on the time you execute the w command:  WHAT
+
+
+Display Linux System Uptime Status Using uptime Command
+[root@fedora ~]# uptime
+
+Start Here
+
+
+How to Display Current Runlevel using runlevel Command
+[root@fedora ~]# runlevel
+
+$ touch <-- create file
+$ mkdir <-- create directory
+$ ls          <-- List file and folder
+$ cp    <-- Copy file
+
+
+Display services or programs list that automatically start when you boot up your Linux machine
+The step by step command example below, show the use of chkconfig command to display services or programs that start on your Linux machine right after you push the start button in front of your machine.  The example below also show how to list all of the service or program that starts (on) and stop (off) for all runlevel using the chkconfig command.  The chckconfig command also can be use to display specific service configuration base on the program on the service name..
+
+Command use in this example:
+
+# chkconfig --list vsftpd      <--service vsftpd is use as an example
+# chkconfig --list    <--  To list all services that start or stop for all runlevel
+
+
+Enable Linux service at boot up, using chkconfig command
+Configuration for GNU Linux Fedora Computer using Linux Command
+
+ 
+
+Using the chkconfig command to enable Linux service at boot up and make service start automatically when you boot up or change runlevel on Linux Fedora machine.  ... we enable web server (httpd) to automatically start each time the Linux machine reboot.
+
+Command use on this example:
+
+# chkconfig --list
+# chkconfig --list httpd
+# chkconfig --level 35 httpd on
+# chkconfig --help
+
+The Fedora machine usually start on either runlevel 3 or runlevel 5... the chkconfig
+
+
+chkconfig --add <name>
+chkconfig --del <name>
+chkconfig --override <name>
+chkconfig [--level <levels>] <name> <on|off|reset|resetpriorities>
+
+
+
+Change Graphical Login Screen to Text Base or Shell Login Screen on Linux Fedora
+[root@fedora ~]# cp -pr /etc/inittab /etc/inittab.bak
+[root@fedora ~]# vi /etc/inittab
+ 	   id:5:initdefault:
+id:3:initdefault:     <--- Text login screen... shell login screen
+id:5:initdefault:  <--- Graphical screen GUI
+
+
+
+# finger [username] <-- Verify user account on the Linux system
+# userdel [username] <-- Remove user account from Linux system
+# userdel -r [username] <-- Delete user account, remove home directory including their files and remove mail spool
+
+
+
+Display Linux process tree, using ps command
+# ps -ejH
+# ps axjf
+
+
+Display Active Running Process, Check Process Run on
+# ps -e
+# ps -ef
+# ps -eF
+# ps -ely
+
+#date
+
+
+
+Extract tar.bz2 file or open tar.bz2
+# tar xvjf
+
+      x      <-- x = extract -->
+       v     <-- v = verbose -->
+        j    <-- j = bzip2 -->
+         f   <-- f = file -->
+
+
+Check System Configuration and Hardware Information on
+# sysreport
+# sysreport -norpm
+# cp /tmp/sysreport-fedora.gnulinux.com.20080724203716.tar.bz2 ./
+2.  The sysreport program will generate and store the result of system configuration and hardware information in the compress file, usually end with .tar.bz2 in the /tmp directory.
+
+
+Change Linux Hostname with hostname
+# hostname
+# hostname [new hostname]
+
+
+Display Linux Partition Table with fdisk Command
+# fdisk -l
+# fdisk -l /dev/sda
+# fdisk 
+
+Display System Information on Linux Machine
+[root@fedora ~]# uname -a
+
+Linux fedora.linux.com 2.6.25-14.fc9.i686 #1 SMP Thu May 1 06:28:41 EDT 2008 i686 i686 i386 GNU/Linux
+
+Output from the example of uname command above display the system information on:
+
+Linux machine kernel name:  Linux
+Linux machine network node hostname:  fedora.linux.com
+Linux machine kernel release:  2.6.25-14.fc9.i686
+Linux machine kernel version:  #1 SMP Thu May 1 06:28:41 EDT 2008
+Linux machine hardware name:  i686
+Linux machine processor type:  i686
+Linux machine hardware platform:  i386
+Linux machine operating system:  GNU/Linux
+
+Install RPM Software
+[root@fedora VMware Tools]# rpm -ivh VMwareTools-6.0.4-93057.i386.rpm 
+
+
+Error code
+Example error code lists on Linux Fedora system:
+[root@fedora ~]# cat /usr/include/bits/errno.h
+[root@fedora ~]# cat /usr/include/asm-generic/errno.h
+
+Check Memory Information Using /proc/meminfo
+
+
+[root@fedora ~]# iwconfig
+
+
+Show detail about USB busses and USB devices using lsusb command
+[root@fedora ~]# lsusb -v
+
+ 
+ 
+//Creating Image / Bakup of HDD by linux dd command
+ 
+BACKUP
+
+1. Just boot with a linux live CD, if you lack of a CD-ROM Drive, then you can create a USB bootable stick with a linux image and boot from it.
+2. Mount you external storage, for instance mount -t ext3 /dev/sdb1 /media/images. NOTE: just the destination drive have to be mounted, not the source drive.
+3. Once you are running the Linux OS, if you found that your hard drive is /dev/sda for instance, then run:
+#dd if=/dev/sda of=/media/images/disksda.img
+#cd /media/images/
+#bzip2 disksda.img <- if you want to compress it.
+Now if you want is to create a image just from a partition then change the if=/dev/sda by if=/dev/sdaX, where X is the number of the partition, for instance:
+#dd if=/dev/sda1 of=/media/images/disksda1.img
+#cd /media/images
+#bzip2 disksda1.img
+Sometimes we want to move this image directly to other remote host with linux and ssh running on it and a user called "user", the we can do this:
+#dd if=/dev/sda of=/dev/stdout bs=1M | bzip2 | ssh user@IPofRemoteHost "cat - > disksda.img.bz2"
+this read the /dev/sda hard drive, the send this data to the standar output and compress it in the RAM, take the standart ouptut compressed and using the ssh write it in the remote host in a file called disksda.img.bz2
+RESTORE
+
+1. Just boot with a linux live CD, if you lack of a CD-ROM Drive, thenyou can create a USB bootable stick with a linux image and boot from it.
+2. Mount you external storage, for instance mount -t ext3 /dev/sdb1 /media/images. NOTE: just the source drive have to be mounted, not the destination drive.
+3. Once you are running the Linux OS, found your hard drive name and restore on it, for instance /dev/sda.
+
+to restore from the remote host do this:
+#ssh user@remotehost "cat - > disksda.img.bz2" | bzip2 -dc | dd if=/dev/stdin of=/dev/sda bs=1M
+to restore from the external storage:
+#dd if=/media/images/disksda.img of=/dev/sda
+or to restore the partiton image doing:
+#dd if=/media/images/disksda1.img of=/dev/sda1
+remember to uncommpress the bzip2 file first if it is compressed.
+Sometimes the first hard drive is called /dev/sda, sometimes /dev/hda thats why you have to check how the linux call your hard drive.
+To clone a hard drive into a second one, just us of=/dev/sdb or whatever the name of the second drive is, without mount any drive.
+Partition table is created, MBR is created, but the external drive in size have to be equal or bigger than the drive to be copied.
+If you have a question about it, please first read this:
+LinuxQuestion.org, dd for backups.
+
+
+
+
+
+
+------
+BT
+------
+
+
+#nmap -vvv -sV -sC www.google.com
+
+
+
+Log Creation
+mkdir /var/www/share
+chmod -R 755 /var/www/share/
+chown -R www-data:www-data /var/www/share/
+
+service apache2 start
+use snort on backtrack :
+#snort -dev -i eth0 -l /var/www
+
+<?php
+$count = 0;
+if ($handle = opendir('.')) {
+    while (false !== ($file = readdir($handle))) {
+        if ($file != "." && $file != "..") {$count++;
+            print("<a href=\"".$file."\">".$file."</a><br />\n");
+        }
+    }
+echo '<br /><br /><a href="..">Return</a>';
+    closedir($handle);
+}
+?>
+
+
+
+Nikto
+perl e:\Tools\nikto-2.1.5\nikto.pl -host http://129.35.250.132:81/plexus-law/sign-in -p 81 -Display D -Cgidirs all -o htm -id sanjaydb@plexuslaw.co.uk:1234
+
+
+
+1.Configuring Openvas .
+
+cd /pentest/misc/openvas/./openvas-check-config.sh
+openvasad -c 'add_user' -n sanjay -r Admin 
+openvas-mkcert
+openvas-nvt-sync
+openvassd
+openvas-mkcert-client -n om -i 
+openvassd --rebuild 
+openvasad -c 'add_user' -n sanjay -r Admin 
+openvasmd -p 9390 -a 127.0.0.1
+openvasmd -a 127.0.0.1 -p 9393
+gsad --http-only --listen=127.0.0.1 -p 9392
+
+Now open GreenBone Bone Security Desktop 
+username :sanjay
+pwd: san
+
+firefox http://127.0.0.1:9392 --> sanjay-san
+
+
+
+ 
