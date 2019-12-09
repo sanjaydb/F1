@@ -1,0 +1,36 @@
+
+Adding or Mounting new HDD
+--------------------------
+{
+
+#fdisk -l
+/dev/sdb 931.53 GiB, 1000204886016 bytes, 1953525168 sectors
+/dev/sdc1 74.5G  7 HPFS/NTFS/exFAT
+/dev/sda1 223.6G 83 Linux
+
+
+#sudo blkid
+/dev/sdb1: UUID="9ce1b" TYPE="ext4" PARTUUID="ead5bb7c-01"
+/dev/sda1: LABEL="SSD-Linux" UUID="6de5" TYPE="ext4" PARTUUID="f0fe3f94-01"
+/dev/sdc1: UUID="357E14" TYPE="ntfs" PTTYPE="dos" PARTUUID="57983438-01"
+
+sudo cp /etc/fstab /etc/fstab.bak
+vi /etc/fstab
+@ bottom add this
+
+UUID="9ce1"   /1TB    ext4    defaults    0    2
+UUID="357E"   /80GB    ext4    defaults    0    2
+
+
+in case of moving home Dir.
+---------------------------
+{
+	create new mounting point for home
+	sudo rsync -avx /home/ /new/mountingpoint   // copy all data to 
+	blkid
+	vi /etc/fstab
+	UUID="357E"   /80GB    ext4    defaults    0    2
+	~:wq
+	reboot
+}
+}
