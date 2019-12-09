@@ -26,11 +26,19 @@ in case of moving home Dir.
 ---------------------------
 {
 	create new mounting point for home
+	
 	sudo rsync -avx /home/ /new/mountingpoint   // copy all data to 
+	{
+		rsync -aXS --progress --exclude='/*/.gvfs' /home/. /media/home/.
+		sudo diff -r /home /media/home -x ".gvfs/*"
+	}
+
 	blkid
 	vi /etc/fstab
 	UUID="357E"   /80GB    ext4    defaults    0    2
 	~:wq
-	reboot
+	
+	reboot || sudo mount -a
+
 }
 }
