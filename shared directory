@@ -1,0 +1,25 @@
+shared directory
+----------------
+{
+  
+  mounting two mount  point on same
+  ---------------------------------
+  {
+    #mount -t unionfs -o dirs=/mnt/user-partition-1:/mnt/user-partition-2 none /home
+    #mmount -t unionfs -o dirs=/mnt/user-partition-1:/mnt/user-partition-2 none /home
+    #unionfs-fuse /mnt/user-partition-1:/mnt/user-partition-2 /home
+   }
+  
+  
+  #mkdir -p /home/share
+  #less group           //  list all groups
+  #getent group root    //  list users in this group
+  #groupadd rnd         //  creat new group
+  #usermod -a -G rnd sanjay     // add sanjay to rnd , rw
+  #/usr/bin/chgrp -R rnd /home/share/
+  #chmod -R 2775 /home/share/   2 = setGID bit, 755,rwx
+  #useradd -m -c "sujay SB" -s/bin/bash -G rnd sujay   //  creating more users and adding in group rnd
+  #mkdir -p /home/share/sujay                         // for new user
+  
+  
+
