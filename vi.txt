@@ -77,3 +77,18 @@ To change and replace
 	n 				--> repeat search in same direction
 	N 				--> repeat search in opposite direction
 	:%s/old/new/g 	--> replace all old with new throughout file
+	
+	
+	
+	
+Hex View
+--------
+{
+	to switch to Hex editing mode
+	 %!xxd 
+	 
+	 back to binary to be able to save the edited file
+	 %!xxd -r
+	 
+
+}
