@@ -92,3 +92,6 @@ Hex View
 	 
 
 }
+
+Shft + g -> end of file 
+
