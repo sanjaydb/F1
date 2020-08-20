@@ -1,3 +1,5 @@
+set nocompatible
+
 To change and replace 
 ---------------------
 {
