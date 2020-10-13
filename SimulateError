@@ -1,0 +1,14 @@
+Simulate Error  for eventlog 
+
+
+eventcreate /ID anyID /L Application /SO anysource /T any error level (Information/Warning/Error) /D "any message"
+
+For example:
+
+eventcreate /ID 9999 /L Application /SO DummySource /T Warning /D "This is a test message."
+
+
+get-command –Name *eventlog
+Write-EventLog –LogName Application –Source “Sanjay” –EntryType Error –EventID 8888 Message “for testing only”
+
+
