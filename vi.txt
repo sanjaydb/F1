@@ -1,4 +1,8 @@
+
 set nocompatible
+syntax on
+colorscheme desert
+
 
 To change and replace 
 ---------------------
