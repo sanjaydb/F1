@@ -9,7 +9,22 @@ view HTTP Traffice
     
     //localhost to localhost
     tcpdump -A -s 0 'tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)' -i lo
-    
+
+ tcpdump -n -v -i enp1s0
+ tcpdump -n -v -e -i enp1s0
+ tcpdump -n tcp
+ tcpdump -n 'src 192.168.1.101'
+ tcpdump -n 'udp and dst port 53'
+ 
+ tcpdump 'src 192.168.1.100 and dst 192.168.1.2 and port ftp'
+  tcpdump -n -A | grep -e 'POST'
+  
+  WinDump.exe -A | findstr "GET"
+  
+  tcpdump port http or port ftp or port smtp or port imap or port pop3 -l -A | egrep -i 'pass=|pwd=|log=|login=|user=|username=|pw=|passw=|passwd=|password=|pass:|user:|username:|password:|login:|pass |user ' --color=auto --line-buffered -B20
+  
     
 }
+
+
 
