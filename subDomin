@@ -1,0 +1,22 @@
+vi /etc/bind/db.san.com
+cse IN CNAME ns
+invoke-rc.d bin9 restart
+nslookup cse.san.com
+cd /etc/apache2/site-availablescp 000-default.conf san.conf
+vi *cse.conf
+{
+  ServerAdmin cse.san.com
+  Socumentroot /var/www/html/cse
+  
+}
+mkdir /var/www/html/cse 
+cd /etc/apache2/site-available
+a2ensite san.conf
+invoke-rc.d apache2 restart
+ping cse.san.com
+
+
+
+
+
+
