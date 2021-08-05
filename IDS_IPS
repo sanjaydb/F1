@@ -1,3 +1,6 @@
+suricata
+---------
+
 apt-get update -y
 
 apt-get install rustc cargo make libpcre3 libpcre3-dbg libpcre3-dev build-essential autoconf automake libtool libpcap-dev libnet1-dev libyaml-0-2 libyaml-dev zlib1g zlib1g-dev libcap-ng-dev libcap-ng0 make libmagic-dev libjansson-dev libjansson4 pkg-config -y
@@ -42,5 +45,153 @@ DDOS
 hping3 -S -p 80 --flood --rand-source your-server-ip
 
 tail -f /var/log/suricata/fast.log
+
+
+
+SNORT
+------
+
+Prepare server
+--------------
+
+sudo apt install -y gcc libpcre3-dev zlib1g-dev libluajit-5.1-dev \
+libpcap-dev openssl libssl-dev libnghttp2-dev libdumbnet-dev \
+bison flex libdnet autoconf libtool
+
+mkdir ~/snort_src && cd ~/snort_src
+wget https://www.snort.org/downloads/snort/daq-2.0.7.tar.gz
+
+tar -xvzf daq-2.0.7.tar.gz
+cd daq-2.0.7
+
+autoreconf -f -i
+
+./configure && make && sudo make install
+
+cd ~/snort_src
+
+wget https://www.snort.org/downloads/snort/snort-2.9.16.tar.gz
+
+tar -xvzf snort-2.9.16.tar.gz
+cd snort-2.9.16
+
+./configure --enable-sourcefire && make && sudo make install
+
+sudo ldconfig
+
+sudo ln -s /usr/local/bin/snort /usr/sbin/snort
+
+
+Setting up username & Folder structure
+--------------------------------------
+
+sudo groupadd snort
+sudo useradd snort -r -s /sbin/nologin -c SNORT_IDS -g snort
+
+sudo mkdir -p /etc/snort/rules
+sudo mkdir /var/log/snort
+sudo mkdir /usr/local/lib/snort_dynamicrules
+
+sudo chmod -R 5775 /etc/snort
+sudo chmod -R 5775 /var/log/snort
+sudo chmod -R 5775 /usr/local/lib/snort_dynamicrules
+sudo chown -R snort:snort /etc/snort
+sudo chown -R snort:snort /var/log/snort
+sudo chown -R snort:snort /usr/local/lib/snort_dynamicrules
+
+sudo touch /etc/snort/rules/white_list.rules
+sudo touch /etc/snort/rules/black_list.rules
+sudo touch /etc/snort/rules/local.rules
+
+sudo cp ~/snort_src/snort-2.9.16/etc/*.conf* /etc/snort
+sudo cp ~/snort_src/snort-2.9.16/etc/*.map /etc/snort
+
+using community rules
+--------------------
+wget https://www.snort.org/rules/community -O ~/community.tar.gz
+
+sudo tar -xvf ~/community.tar.gz -C ~/
+
+sudo cp ~/community-rules/* /etc/snort/rules
+
+sudo sed -i 's/include \$RULE\_PATH/#include \$RULE\_PATH/' /etc/snort/snort.conf
+
+wget https://www.snort.org/rules/snortrules-snapshot-29160.tar.gz?oinkcode=oinkcode -O ~/registered.tar.gz
+
+sudo tar -xvf ~/registered.tar.gz -C /etc/snort
+
+Configure network
+-----------------
+sudo nano /etc/snort/snort.conf
+
+# Setup the network addresses you are protecting
+ipvar HOME_NET server_public_ip/32
+
+# Set up the external network addresses. Leave as "any" in most situations
+ipvar EXTERNAL_NET !$HOME_NET
+
+# Path to your rules files (this can be a relative path)
+var RULE_PATH /etc/snort/rules
+var SO_RULE_PATH /etc/snort/so_rules
+var PREPROC_RULE_PATH /etc/snort/preproc_rules
+
+# Set the absolute path appropriately
+var WHITE_LIST_PATH /etc/snort/rules
+var BLACK_LIST_PATH /etc/snort/rules
+
+# unified2
+# Recommended for most installs
+output unified2: filename snort.log, limit 128
+
+include $RULE_PATH/local.rules
+
+include $RULE_PATH/community.rules
+
+
+validating Settings 
+------------------
+
+sudo snort -T -c /etc/snort/snort.conf
+
+Testing the configuration
+------------------------
+sudo nano /etc/snort/rules/local.rules
+
+alert icmp any any -> $HOME_NET any (msg:"ICMP test"; sid:10000001; rev:001;)
+
+
+sudo snort -A console -i eth0 -u snort -g snort -c /etc/snort/snort.conf
+
+ip addr
+
+snort -r /var/log/snort/snort.log.
+
+
+Running Snort in the background
+-------------------------------
+sudo nano /lib/systemd/system/snort.service
+
+{
+[Unit]
+Description=Snort NIDS Daemon
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/snort -q -u snort -g snort -c /etc/snort/snort.conf -i eth0
+
+[Install]
+WantedBy=multi-user.target
+}
+
+
+sudo systemctl daemon-reload
+
+sudo systemctl start snort
+
+sudo systemctl status snort
+
+
+
 
 
