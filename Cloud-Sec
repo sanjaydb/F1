@@ -1,0 +1,41 @@
+Tools For Cloude Sec.
+{
+1. s3scanner -> Identify the open s3 buckets and contents inside, Takes list of buckets and checks permissions.
+ {
+    #python3 ./s3scanner.py -d flaws.cloud
+    # cd buckets
+    # ls
+ }
+
+2. Cloudbrute -> brute force for cloud
+  {
+    # tar-xvf cloudbrute_1.0.7_linux_x86_64.tar.gz
+    -- for the API key use free ipinfo ( https://ipinfo.io/account )
+    #./cloudbrute -d flaws.cloud -k flaws -n storage -t 80 -T 5 -w "./data/storage_small.txt 1 x 1
+  }
+3. cloud_enum -> enumerating AWS, Azure GSP
+{
+   #git clone https://github.com/initstring/cloud_enum.git
+   #cd cloud_enum
+   # python3 -m pip install -r requirments.txt
+   # python3 cloud_enum.py -k flaws.cloud
+}  
+4. kubebench -> CIS benchmarking for kubernetes
+{
+  # curl -L https://github.com/aquasecurity/kube-bench/releases/download/v0.3.1/kube-bench_0.3.1_linux_amd64.deb -o kube-bench_0.3.1_linux_amd64.deb
+  # appinstall ./kube-bench_0.3.1_linux_amd64.deb -f
+  # ./kube-bench 
+}
+5. kubehunter ->
+  {
+    https://aquasecurity.github.io/kube-hunter/kbindex.html
+    # cd kube-hunter
+    # python3 -m pip install -r requirmentes.txt
+    # python3 kube-hunter.py -m 
+  }
+}
+
+References 
+----------
+CloudPentesterCheatsheets
+AWS-Security-Tools
