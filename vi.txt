@@ -3,6 +3,12 @@ set nocompatible
 syntax on
 colorscheme desert
 
+Execute shell from vi 
+----------------------
+1. Ctrl-Z and fg t
+2. :shell  -> exit
+3. ! /bin/bash -> exit 
+
 
 To change and replace 
 ---------------------
@@ -11,7 +17,7 @@ To change and replace
   `%s/pattern/replcae     --> whole document find and replace
 }
 
- 	  :sp p1.c 				--> open a file  Horizontally split window
+    :sp p1.c 				--> open a file  Horizontally split window
     :vsp p1.c 				--> open a file Vertically split window
     `+ctrl+w+leftarrow 		--> to move cursor in windows 
     ctrl + ww  				--> to switch windows
@@ -22,8 +28,9 @@ To change and replace
     :close 
     :wqa 					--> write (save) and quit on all tabs
     
-    movement
-    --------
+    
+movement
+--------
     H 		--> move top of screen
     b 		--> move backwork word
     w 		--> move fwd word
@@ -32,8 +39,8 @@ To change and replace
     G 		--> move last line
     3G 		--> move line number
 
-    screen
-    ------
+screen
+ ------
     ctrl + e 		--> move screen 1 down
     crtl + y 		--> move screen 1 up
 
@@ -41,8 +48,8 @@ To change and replace
     ctrl + f 		--> mov frwd full screen
 
 
-    split
-    -----
+split
+-----
     :sp new.c    	--> move ctrl + w + up/dwn/lef/rig arrow
     :vsp new.c 		--> vertical split
     :ls 			--> list open files
@@ -67,8 +74,8 @@ To change and replace
 
 
 
-    Marks
-    -----
+Marks
+-----
 
     :marks 		--> list of marks
     ma 			--> set current position for mark A
@@ -76,9 +83,9 @@ To change and replace
     y`a 		--> yank text to position of mark A
 
 
-    search
-    -------
-    /pattern 		--> search for pattern
+search
+-------
+        /pattern 		--> search for pattern
 	?pattern 		--> search backward for pattern
 	n 				--> repeat search in same direction
 	N 				--> repeat search in opposite direction
@@ -188,7 +195,9 @@ Exiting
 :wq - write (save) and quit
 :q - quit (fails if anything has changed)
 :q! - quit and throw away changes
+
 Search/Replace
+--------------
 /pattern - search for pattern
 ?pattern - search backward for pattern
 n - repeat search in same direction
@@ -207,3 +216,4 @@ ctrl+ws - Split windows
 ctrl+ww - switch between windows
 ctrl+wq - Quit a window
 ctrl+wv - Split windows vertically
+
