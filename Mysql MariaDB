@@ -1,4 +1,207 @@
-// Notes For MYSQL.
---------------------
+Notes for MariaDB commands and administration tasks, including password recovery, connecting to MariaDB, basic SQL commands, error logging, and other important administrative commands.
+
+---
+
+1. Reset Forgotten Password in MariaDB
+
+If you forget the MariaDB root password, follow these steps to reset it:
+
+#Step 1: Stop MariaDB Service
+  sudo systemctl stop mariadb
+
+
+#Step 2: Start MariaDB in Safe Mode
+  sudo mysqld_safe --skip-grant-tables &
+
+#Step 3: Connect to MariaDB Without Password
+  mysql -u root
+
+
+#Step 4: Reset the Password
+  FLUSH PRIVILEGES;
+  ALTER USER 'root'@'localhost' IDENTIFIED BY 'new_password';
+  FLUSH PRIVILEGES;
+  EXIT;
+
+
+#Step 5: Restart MariaDB
+  sudo systemctl start mariadb
+
+
+---
+
+2. Connect to MariaDB from Console
+
+To connect to MariaDB from the command line:
+  mysql -u username -p
+
+  - Replace `username` with your MariaDB username.
+  - You’ll be prompted to enter the password.
+
+To connect to a specific database:
+  mysql -u username -p -D database_name
+
+
+---
+
+3. Basic SQL Commands for MariaDB
+
+Here are some essential SQL commands for operating MariaDB:
+
+#Database Operations
+- Create a Database:
+  CREATE DATABASE database_name;
+  
+- Switch to a Database:
+  USE database_name;
+  
+- List All Databases:
+  SHOW DATABASES;
+  
+- Delete a Database:
+  DROP DATABASE database_name;
+  
+
+#Table Operations
+- Create a Table:
+  CREATE TABLE table_name (
+      column1 datatype,
+      column2 datatype,
+      ...
+  );
+  
+- List Tables in a Database:
+  SHOW TABLES;
+  
+- Describe Table Structure:
+  DESCRIBE table_name;
+  
+- Insert Data into a Table:
+  INSERT INTO table_name (column1, column2) VALUES ('value1', 'value2');
+  
+- Select Data from a Table:
+  SELECT * FROM table_name;
+  
+- Update Data in a Table:
+  UPDATE table_name SET column1 = 'new_value' WHERE condition;
+  
+- Delete Data from a Table:
+  DELETE FROM table_name WHERE condition;
+  
+- Delete a Table:
+  DROP TABLE table_name;
+  
+
+#User and Privilege Management
+- Create a User:
+  CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
+  
+- Grant Privileges:
+  GRANT ALL PRIVILEGES ON database_name.* TO 'username'@'localhost';
+  FLUSH PRIVILEGES;
+  
+- Revoke Privileges:
+  REVOKE ALL PRIVILEGES ON database_name.* FROM 'username'@'localhost';
+  FLUSH PRIVILEGES;
+  
+- Delete a User:
+  DROP USER 'username'@'localhost';
+  
+
+---
+
+4. Logging SQL Commands and Errors
+
+#Enable General Query Log
+To log all SQL commands executed by the application:
+1. Edit the MariaDB configuration file (`/etc/my.cnf` or `/etc/mysql/mariadb.conf.d/50-server.cnf`):
+   [mysqld]
+   general_log = 1
+   general_log_file = /var/log/mysql/mysql.log
+   
+2. Restart MariaDB:
+   sudo systemctl restart mariadb
+   
+
+#View Error Log
+The error log is usually located at `/var/log/mysql/error.log`. You can view it using:
+sudo tail -f /var/log/mysql/error.log
+
+
+#Enable Slow Query Log
+To log slow queries:
+1. Edit the MariaDB configuration file:
+   [mysqld]
+   slow_query_log = 1
+   slow_query_log_file = /var/log/mysql/slow.log
+   long_query_time = 2
+   
+2. Restart MariaDB:
+   sudo systemctl restart mariadb
+   
+
+---
+
+5. Important Administrative Commands
+
+#Backup a Database
+mysqldump -u username -p database_name > backup.sql
+
+
+#Restore a Database
+mysql -u username -p database_name < backup.sql
+
+
+#Check MariaDB Status
+sudo systemctl status mariadb
+
+
+#Restart MariaDB
+sudo systemctl restart mariadb
+
+
+#Check Running Queries
+SHOW FULL PROCESSLIST;
+
+
+#Kill a Running Query
+KILL query_id;
+
+
+#Optimize Tables
+OPTIMIZE TABLE table_name;
+
+
+#Check Table Status
+CHECK TABLE table_name;
+
+
+#Repair a Table
+REPAIR TABLE table_name;
+
+
+---
+
+6. Common Errors and Troubleshooting
+
+#Access Denied for User
+- Ensure the username and password are correct.
+- Check if the user has the necessary privileges:
+  SHOW GRANTS FOR 'username'@'localhost';
+  
+
+#Table Doesn’t Exist
+- Verify the table name and database:
+  SHOW TABLES;
+  
+
+#Connection Refused
+- Ensure MariaDB is running:
+  sudo systemctl status mariadb
+  
+- Check the firewall settings to allow MariaDB ports (default: 3306).
+
+---
+
 
 

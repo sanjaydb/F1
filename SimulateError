@@ -1,5 +1,5 @@
 Simulate Error  for eventlog 
-
+-----------------------------
 
 eventcreate /ID anyID /L Application /SO anysource /T any error level (Information/Warning/Error) /D "any message"
 
@@ -10,5 +10,145 @@ eventcreate /ID 9999 /L Application /SO DummySource /T Warning /D "This is a tes
 
 get-command –Name *eventlog
 Write-EventLog –LogName Application –Source “Sanjay” –EntryType Error –EventID 8888 Message “for testing only”
+
+------------------------------
+
+Command Prompt (`eventcreate`) and PowerShell commands.
+
+[01.] Simulate Errors Using `eventcreate` (Command Prompt)
+The `eventcreate` command is a built-in Windows tool for creating custom events in the Event Log.
+
+Basic Syntax
+
+eventcreate /ID <ID> /L <LogName> /SO <Source> /T <Type> /D "<Message>"
+
+Examples
+1. Create an Information Event:
+   eventcreate /ID 1001 /L Application /SO MyApp /T Information /D "This is an informational message."
+   
+
+2. Create a Warning Event:
+   cmd
+   eventcreate /ID 1002 /L Application /SO MyApp /T Warning /D "This is a warning message."
+   
+
+3. Create an Error Event:
+   cmd
+   eventcreate /ID 1003 /L Application /SO MyApp /T Error /D "This is an error message."
+   
+
+4. Create an Event in the System Log:
+   cmd
+   eventcreate /ID 1004 /L System /SO MyDriver /T Error /D "Driver failed to load."
+   
+
+---
+
+[02.] Simulate Errors Using PowerShell
+PowerShell provides more flexibility for working with the Event Log.
+
+Basic Syntax
+
+powershell
+Write-EventLog -LogName <LogName> -Source <Source> -EntryType <Type> -EventID <ID> -Message "<Message>"
+
+
+Examples
+1. Create an Information Event:
+   powershell
+   Write-EventLog -LogName Application -Source "MyApp" -EntryType Information -EventID 2001 -Message "This is an informational message."
+   
+
+2. Create a Warning Event:
+   powershell
+   Write-EventLog -LogName Application -Source "MyApp" -EntryType Warning -EventID 2002 -Message "This is a warning message."
+   
+
+3. Create an Error Event:
+   powershell
+   Write-EventLog -LogName Application -Source "MyApp" -EntryType Error -EventID 2003 -Message "This is an error message."
+   
+
+4. Create an Event in the System Log:
+   powershell
+   Write-EventLog -LogName System -Source "MyDriver" -EntryType Error -EventID 2004 -Message "Driver failed to load."
+   
+
+---
+
+[03.] Additional PowerShell Commands for Event Log
+
+List All Event Logs
+powershell
+Get-EventLog -List
+
+
+Get Events from a Specific Log
+powershell
+Get-EventLog -LogName Application -Newest 10
+
+- Retrieves the 10 most recent events from the Application log.
+
+Filter Events by EventID
+powershell
+Get-EventLog -LogName Application | Where-Object { $_.EventID -eq 2001 }
+
+- Retrieves all events with EventID 2001 from the Application log.
+
+Clear an Event Log
+powershell
+Clear-EventLog -LogName Application
+
+- Clears all events from the Application log.
+
+Create a New Event Log Source
+If the source doesn’t exist, you need to create it first:
+powershell
+New-EventLog -LogName Application -Source "MyNewSource"
+
+
+Remove an Event Log Source
+powershell
+Remove-EventLog -Source "MyNewSource"
+
+
+---
+
+[04.] Advanced Event Log Management
+
+Export Event Log to a File
+powershell
+Get-EventLog -LogName Application | Export-Csv -Path "C:\EventLogs.csv"
+
+- Exports the Application log to a CSV file.
+
+Monitor Event Log in Real-Time
+powershell
+Get-WinEvent -LogName Application -MaxEvents 10 -Wait
+
+- Monitors the Application log in real-time and displays the last 10 events.
+
+Query Events Using XML
+You can use XML queries to filter events:
+powershell
+$query = @"
+<QueryList>
+  <Query Id="0" Path="Application">
+    <Select Path="Application">*[System[(EventID=2001)]]</Select>
+  </Query>
+</QueryList>
+"@
+Get-WinEvent -FilterXml $query
+
+- Retrieves all events with EventID 2001 from the Application log.
+
+---
+
+[05.] Troubleshooting Event Log Issues
+- Source Not Found: If you get an error saying the source doesn’t exist, create it using `New-EventLog`.
+- Permissions: Ensure you’re running the command as an administrator.
+- Log Size: Check the log size limits in Event Viewer (`eventvwr.msc`) to avoid losing events.
+
+
 
 
