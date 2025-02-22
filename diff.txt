@@ -3,3 +3,23 @@ Find Diffrence of two text file
 {
   grep -vf file1.txt file2.txt
 }
+
+grep -Fxvf file1.txt file2.txt
+
+-F: Interprets the pattern as a fixed string.
+-x: Matches only whole lines.
+-v: Inverts the match to select non-matching lines.
+-f file1.txt: Takes patterns from file1.txt
+
+
+diff file1.txt file2.txt
+  Lines starting with < are from file1.txt.
+  Lines starting with > are from file2.txt
+
+diff -u file1.txt file2.txt
+  This provides a more readable output, showing differences with surrounding context. 
+
+comm -3 <(sort file1.txt) <(sort file2.txt)
+
+
+awk 'NR==FNR{a[$0]; next} !($0 in a)' file1.txt file2.txt
