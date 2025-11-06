@@ -1,0 +1,31 @@
+#themagic
+
+del these files to save space :
+
+
+
+C:\Windows\Temp
+C:\Users\<YourUsername>\AppData\Local\Temp
+%temp%
+
+
+2. Temporary Files from Windows Installer (.tmp, .cab)
+C:\Windows\Installer
+C:\Windows\Installer\$PatchCache$
+C:\Windows\SoftwareDistribution\Download
+
+🟡 **Note:**
+* Do **NOT** delete the entire `Installer` folder.
+* You can clear **SoftwareDistribution\Download** safely — it only contains Windows Update cache:
+
+
+3. Visual Studio & Developer Build Temp Files
+
+%USERPROFILE%\AppData\Local\Microsoft\VisualStudio
+%USERPROFILE%\AppData\Local\Temp
+%USERPROFILE%\AppData\Local\Microsoft\MSBuild
+%USERPROFILE%\AppData\Local\Microsoft\Windows\INetCache
+%USERPROFILE%\.nuget\packages
+%ProgramData%\Microsoft\VisualStudio\Packages
+C:\Windows\Microsoft.NET\Framework64\v4.0.30319\Temporary ASP.NET Files
+%LocalAppData%\Microsoft\VisualStudio\<version>\ComponentModelCache
