@@ -1,0 +1,82 @@
+
+DNS - COnfiguration 
+------------------
+
+
+sudo apt update
+sudo apt install bind9 bind9utils bind9-doc -y
+
+
+sudo nano /etc/bind/named.conf.local
+-
+zone "aquasan21.com" {
+    type master;
+    file "/etc/bind/db.aquasan21.com";
+};
+
+zone "1.168.192.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.192";
+};
+
+-
+
+
+sudo cp /etc/bind/db.local /etc/bind/db.aquasan21.com
+sudo nano /etc/bind/db.aquasan21.com
+-
+$TTL    604800
+@       IN      SOA     ns1.aquasan21.com. admin.aquasan21.com. (
+                        2025110601 ; Serial (YYYYMMDDnn)
+                        604800     ; Refresh
+                        86400      ; Retry
+                        2419200    ; Expire
+                        604800 )   ; Negative Cache TTL
+;
+; Name servers
+@       IN      NS      ns1.aquasan21.com.
+
+; A records
+ns1     IN      A       192.168.1.10
+www     IN      A       192.168.1.20
+updates IN      A       192.168.1.21
+portal  IN      A       192.168.1.22
+
+; CNAME aliases
+support IN      CNAME   www.aquasan21.com.
+-
+
+sudo cp /etc/bind/db.127 /etc/bind/db.192
+sudo nano /etc/bind/db.192
+-
+$TTL    604800
+@       IN      SOA     ns1.aquasan21.com. admin.aquasan21.com. (
+                        2025110601 ; Serial
+                        604800
+                        86400
+                        2419200
+                        604800 )
+;
+@       IN      NS      ns1.aquasan21.com.
+10      IN      PTR     ns1.aquasan21.com.
+20      IN      PTR     www.aquasan21.com.
+21      IN      PTR     updates.aquasan21.com.
+22      IN      PTR     portal.aquasan21.com.
+-
+
+
+sudo named-checkconf
+sudo named-checkzone aquasan21.com /etc/bind/db.aquasan21.com
+sudo named-checkzone 1.168.192.in-addr.arpa /etc/bind/db.192
+
+
+sudo systemctl restart bind9
+sudo systemctl enable bind9
+
+
+dig @127.0.0.1 www.aquasan21.com
+dig @127.0.0.1 updates.aquasan21.com
+dig -x 192.168.1.21
+
+
+
